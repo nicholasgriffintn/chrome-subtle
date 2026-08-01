@@ -66,12 +66,15 @@ test("popup exposes dual mode, local import and privacy status", () => {
   assert.match(popup, /value="cursive"/);
   assert.match(popup, /id="platform-source-option"/);
   assert.match(popup, /id="enable-site"/);
+  assert.match(popup, /id="limited-view"/);
+  assert.match(popup, /id="full-popup" hidden/);
   assert.match(popup, /value="platform"/);
   assert.match(controller, /SubtleCaptionSettings[.]sourceView\(state, pageStatus/);
   assert.match(settings, /pageStatus[?][.]availableTracks/);
   assert.match(settings, /Second language/);
   assert.match(controller, /message[?][.]type !== "SUBTLE_STATUS"/);
   assert.match(controller, /chrome[.]permissions[.]request/);
+  assert.match(controller, /SubtlePopupAccess[.]view/);
   assert.doesNotMatch(controller, /Netflix does not expose a stable second track/);
 });
 

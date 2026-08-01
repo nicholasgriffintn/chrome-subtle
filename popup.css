@@ -17,7 +17,6 @@
 
 html, body {
   width: 410px;
-  min-height: 580px;
   margin: 0;
   overflow-x: hidden;
   color: var(--paper);
@@ -83,10 +82,13 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
 .site-status > span:last-child { overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #707a7f; box-shadow: 0 0 0 3px rgba(112, 122, 127, 0.12); }
 .site-status.is-ready .status-dot { background: var(--mint); box-shadow: 0 0 0 3px rgba(134, 216, 193, 0.12); }
-.site-status.needs-access .status-dot { background: var(--amber); box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.12); }
-.enable-site { display: block; width: calc(100% - 20px); height: 36px; margin: 8px 10px 0; border: 1px solid rgba(242, 184, 75, 0.55); border-radius: 7px; color: #151515; background: var(--amber); font-size: 0.72rem; font-weight: 700; }
+.limited-view { position: relative; margin: 0 10px 10px; padding: 28px 24px 26px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 12px; background: radial-gradient(circle at 100% 0%, rgba(242, 184, 75, 0.14), transparent 44%), #141b1f; }
+.limited-view::after { content: "CC"; position: absolute; right: -4px; bottom: -28px; color: rgba(244, 239, 227, 0.035); font: 800 7.5rem/1 var(--display); font-kerning: none; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; }
+.limited-view h2 { position: relative; z-index: 1; max-width: 310px; margin: 4px 0 8px; font: 650 1.5rem/1.08 var(--display); letter-spacing: -0.035em; }
+.limited-view p { position: relative; z-index: 1; max-width: 305px; margin: 0; color: var(--paper-dim); font-size: 0.72rem; line-height: 1.5; }
+.enable-site { position: relative; z-index: 1; display: block; width: 100%; height: 38px; margin-top: 20px; border: 1px solid rgba(242, 184, 75, 0.55); border-radius: 7px; color: #151515; background: var(--amber); font-size: 0.72rem; font-weight: 700; }
 .enable-site:disabled { cursor: wait; opacity: 0.7; }
-.enable-site[hidden] { display: none; }
+.enable-site[hidden], .limited-view[hidden], #full-popup[hidden], .power[hidden] { display: none; }
 
 .workspace { padding: 14px 10px 10px; }
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; background: #0c1114; }

@@ -16,13 +16,21 @@
           <p>Read every frame.</p>
         </div>
       </div>
-      <label class="power" aria-label="Enable Subtle">
+      <label class="power" aria-label="Enable Subtle" hidden>
         <input id="enabled" type="checkbox">
         <span aria-hidden="true"></span>
       </label>
     </header>
 
-    <section class="stage" aria-label="Subtitle preview">
+    <section id="limited-view" class="limited-view">
+      <span id="limited-eyebrow" class="eyebrow">Checking this page</span>
+      <h2 id="limited-title">One moment…</h2>
+      <p id="limited-detail">Subtle is checking whether this site is supported.</p>
+      <button id="enable-site" class="enable-site" type="button" hidden>Enable Subtle on this site</button>
+    </section>
+
+    <div id="full-popup" hidden>
+      <section class="stage" aria-label="Subtitle preview">
       <div class="film-grain" aria-hidden="true"></div>
       <span class="stage-label">Live style</span>
       <div class="preview-window">
@@ -31,16 +39,15 @@
           <p id="secondary-preview">Hay más que escuchar que el sonido.</p>
         </div>
       </div>
-    </section>
+      </section>
 
-    <div class="site-status" id="site-status" role="status">
-      <span class="status-dot" aria-hidden="true"></span>
-      <strong id="platform">Open YouTube or Netflix</strong>
-      <span id="status-detail">waiting for a player</span>
-    </div>
-    <button id="enable-site" class="enable-site" type="button" hidden>Enable Subtle on this site</button>
+      <div class="site-status" id="site-status" role="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <strong id="platform">Open YouTube or Netflix</strong>
+        <span id="status-detail">waiting for a player</span>
+      </div>
 
-    <section class="workspace">
+      <section class="workspace">
       <div class="mode-switch" role="group" aria-label="Subtitle mode">
         <button type="button" data-mode="single">Polish</button>
         <button type="button" data-mode="dual">Dual</button>
@@ -178,16 +185,18 @@
           </label>
         </details>
       </section>
-    </section>
+      </section>
 
-    <footer>
-      <p><strong>On-device.</strong> No account, analytics or subtitle uploads.</p>
-      <button id="reset" type="button">Reset</button>
-      <span id="save-status" role="status"></span>
-    </footer>
+      <footer>
+        <p><strong>On-device.</strong> No account, analytics or subtitle uploads.</p>
+        <button id="reset" type="button">Reset</button>
+        <span id="save-status" role="status"></span>
+      </footer>
+    </div>
   </main>
   <script src="lib/state.js"></script>
   <script src="lib/site-access.js"></script>
+  <script src="lib/popup-access.js"></script>
   <script src="lib/cues.js"></script>
   <script src="lib/imports.js"></script>
   <script src="lib/overlay.js"></script>
