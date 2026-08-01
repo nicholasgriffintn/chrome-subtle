@@ -2,6 +2,8 @@
 
 Subtle makes captions easier to read on YouTube and Netflix. It styles each site's native captions and can add a synchronised second line from platform captions or a local SRT/VTT file.
 
+![Subtle marquee Promo](/promos/marquee-1400x560.png)
+
 ## What it does
 
 - Restyle native captions with nine presets, 18 local font choices, independent surface and edge controls, alignment, spacing, blur, size and manual height controls.
@@ -15,6 +17,8 @@ Subtle makes captions easier to read on YouTube and Netflix. It styles each site
 - Shift imported captions forwards or backwards to correct timing.
 - Filter sound descriptions, music cues, speaker labels and custom literal words or phrases when requested.
 - Keep all preferences and imported files on the device.
+
+![A screenshot of Subtle's popup on YouTube with a second caption line](/screenshots/screenshot.png)
 
 ## Install locally
 
