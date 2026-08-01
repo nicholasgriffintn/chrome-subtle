@@ -44,6 +44,7 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 
 ## Limitations
 
+- Picture in Picture mode does not display subtitles. This is a limitation of the browser's implementation.
 - YouTube second-language availability depends on the caption tracks supplied with each video.
 - Netflix second-language availability depends on the tracks packaged with each title; Subtle does not machine-translate Netflix captions.
 - BBC iPlayer currently supports its native caption track and a local SRT/VTT second line; it does not expose a platform second-language selector in Subtle.
