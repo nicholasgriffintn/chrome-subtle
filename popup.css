@@ -83,6 +83,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
 .site-status > span:last-child { overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #707a7f; box-shadow: 0 0 0 3px rgba(112, 122, 127, 0.12); }
 .site-status.is-ready .status-dot { background: var(--mint); box-shadow: 0 0 0 3px rgba(134, 216, 193, 0.12); }
+.site-status.needs-access .status-dot { background: var(--amber); box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.12); }
+.enable-site { display: block; width: calc(100% - 20px); height: 36px; margin: 8px 10px 0; border: 1px solid rgba(242, 184, 75, 0.55); border-radius: 7px; color: #151515; background: var(--amber); font-size: 0.72rem; font-weight: 700; }
+.enable-site:disabled { cursor: wait; opacity: 0.7; }
+.enable-site[hidden] { display: none; }
 
 .workspace { padding: 14px 10px 10px; }
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; background: #0c1114; }

@@ -6,9 +6,11 @@
   "description": "Readable, customisable and dual subtitles for YouTube and Netflix.",
   "minimum_chrome_version": "120",
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab",
+    "scripting"
   ],
-  "host_permissions": [
+  "optional_host_permissions": [
     "https://www.youtube.com/*",
     "https://www.youtube-nocookie.com/*",
     "https://www.netflix.com/*"
@@ -26,52 +28,6 @@
       "128": "icons/icon-128.png"
     }
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.youtube.com/*",
-        "https://www.youtube-nocookie.com/*"
-      ],
-      "js": [
-        "youtube-page-bridge.js"
-      ],
-      "run_at": "document_start",
-      "world": "MAIN"
-    },
-    {
-      "matches": [
-        "https://www.netflix.com/*"
-      ],
-      "js": [
-        "netflix-page-bridge.js"
-      ],
-      "run_at": "document_start",
-      "world": "MAIN"
-    },
-    {
-      "matches": [
-        "https://www.youtube.com/*",
-        "https://www.youtube-nocookie.com/*",
-        "https://www.netflix.com/*"
-      ],
-      "css": [
-        "content.css"
-      ],
-      "js": [
-        "lib/state.js",
-        "lib/cues.js",
-        "lib/adapters.js",
-        "lib/youtube-captions.js",
-        "lib/netflix-captions.js",
-        "lib/platform-captions.js",
-        "lib/overlay.js",
-        "lib/runtime-context.js",
-        "lib/runtime.js",
-        "content.js"
-      ],
-      "run_at": "document_start"
-    }
-  ],
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",

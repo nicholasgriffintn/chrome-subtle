@@ -12,7 +12,7 @@ export function Privacy() {
         </p>
         <ul>
           <li>Only runs on supported sites</li>
-          <li>Requests storage permission only</li>
+          <li>Requests site access only when you enable a service</li>
           <li>Never uploads imported subtitle files</li>
           <li>Never stores track URLs or caption text</li>
         </ul>

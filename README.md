@@ -19,7 +19,8 @@ Subtle makes captions easier to read on YouTube and Netflix. It styles each site
 2. Extract the ZIP.
 3. Open `chrome://extensions` in Chrome.
 4. Enable **Developer mode** and select **Load unpacked**.
-5. Choose the extracted extension directory, then reload any open YouTube or Netflix tab.
+5. Choose the extracted extension directory.
+6. Open YouTube or Netflix, open Subtle and select **Enable Subtle on YouTube/Netflix**. Chrome grants only that service and reloads the tab once.
 
 The companion site is in `website/`. Its download is a development preview; the extension has not yet been published to the Chrome Web Store.
 
@@ -27,7 +28,7 @@ The companion site is in `website/`. Its download is a development preview; the 
 
 Subtle processes the current playback time, native caption elements and the caption metadata already supplied to supported video pages. On YouTube, it reuses the player's caption request to ask YouTube for the selected translated track. On Netflix, it requests the selected title track from a Netflix-provided CDN URL inside the active tab. Netflix track URLs and caption text are not written to extension storage.
 
-Subtle has no accounts, analytics, advertising, remote scripts or translation service. Imported files are not uploaded. The extension runs only on `youtube.com`, `youtube-nocookie.com` and `netflix.com`; its sole Chrome permission is `storage`.
+Subtle has no accounts, analytics, advertising, remote scripts or translation service. Imported files are not uploaded. Site access is optional: Subtle requests the current supported service only when you select its enable button, and removes its registered scripts if that access is revoked. `activeTab` identifies the service opened with the toolbar button, `scripting` registers its local bridge and runtime, and `storage` keeps settings on-device.
 
 Platform caption requests stay between the active tab and YouTube or Netflix infrastructure. Subtle does not send caption data to its own server or to an external translation provider. This privacy statement was last updated on 1 August 2026.
 
@@ -43,7 +44,9 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 
 ## Development
 
-The Manifest V3 extension has no runtime dependencies or build step. Runtime consumes one caption-provider interface with YouTube and Netflix adapters. Each provider owns content identity, track discovery, selection and cue loading, while overlay rendering and settings remain platform-neutral. Netflix's provider composes overlapping WebVTT, DFXP and IMSC cues into one multiline timeline so every simultaneously active line remains visible.
+The Manifest V3 extension has no runtime dependencies or build step. Runtime consumes one deep caption-provider interface with internal YouTube and Netflix implementations. Shared SRT, WebVTT, TTML, DFXP and IMSC parsing lives in the cue module, while provider-specific identity, discovery, selection and loading stay behind the provider seam. Page bridges remain separate because their interception strategies differ.
+
+Supported-site configuration is centralised in `lib/site-access.js`. The service worker dynamically registers the correct main-world bridge and isolated runtime only for origin groups the user has granted, making another service a registry and provider addition rather than a manifest-wide edit.
 
 The YouTube page bridge passively captures the player's proof-bearing timed-text request because tokenless URLs from player metadata return empty responses. The Netflix page bridge requests all title tracks, captures bounded track metadata from the player manifest and fetches a selected track by opaque identifier. Download URLs never cross into settings or storage. Netflix player matching separately scores connected video elements and excludes billboard and preview playback before deriving an overlay host. The renderer measures the union of active native caption boxes and follows it without overriding Netflix's authored placement.
 

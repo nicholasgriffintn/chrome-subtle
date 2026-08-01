@@ -7,12 +7,16 @@ const root = path.resolve(__dirname, "..");
 
 test("manifest keeps permissions narrow and loads reusable modules before orchestration", () => {
   const manifest = JSON.parse(read("manifest.json"));
-  const isolated = manifest.content_scripts.find((script) => script.js.includes("content.js"));
-  const mainWorldScripts = manifest.content_scripts.filter((script) => script.world === "MAIN");
+  const access = require("../lib/site-access.js");
+  const registrations = access.all().flatMap(access.registrationsFor);
+  const isolated = registrations.find((script) => script.js.includes("content.js"));
+  const mainWorldScripts = registrations.filter((script) => script.world === "MAIN");
 
   assert.equal(manifest.version, "0.2.0");
-  assert.deepEqual(manifest.permissions, ["storage"]);
-  assert.equal(manifest.host_permissions.includes("<all_urls>"), false);
+  assert.deepEqual(manifest.permissions, ["storage", "activeTab", "scripting"]);
+  assert.equal("host_permissions" in manifest, false);
+  assert.equal("content_scripts" in manifest, false);
+  assert.deepEqual(manifest.optional_host_permissions, access.all().flatMap((platform) => platform.origins));
   assert.ok(isolated.js.indexOf("lib/state.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.includes("lib/runtime-context.js"));
   assert.ok(isolated.js.indexOf("lib/runtime-context.js") < isolated.js.indexOf("lib/runtime.js"));
@@ -20,6 +24,8 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(isolated.js.indexOf("lib/runtime.js") < isolated.js.indexOf("content.js"));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("youtube-page-bridge.js") && script.matches.some((match) => match.includes("youtube"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("netflix-page-bridge.js") && script.matches.some((match) => match.includes("netflix"))));
+  assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
+  assert.match(read("service-worker.js"), /unregisterContentScripts/);
 });
 
 test("the page bridge has no extension API access and the content entry point only orchestrates", () => {
@@ -59,11 +65,13 @@ test("popup exposes dual mode, local import and privacy status", () => {
   assert.match(popup, /value="monospaced_serif"/);
   assert.match(popup, /value="cursive"/);
   assert.match(popup, /id="platform-source-option"/);
+  assert.match(popup, /id="enable-site"/);
   assert.match(popup, /value="platform"/);
   assert.match(controller, /SubtleCaptionSettings[.]sourceView\(state, pageStatus/);
   assert.match(settings, /pageStatus[?][.]availableTracks/);
   assert.match(settings, /Second language/);
   assert.match(controller, /message[?][.]type !== "SUBTLE_STATUS"/);
+  assert.match(controller, /chrome[.]permissions[.]request/);
   assert.doesNotMatch(controller, /Netflix does not expose a stable second track/);
 });
 

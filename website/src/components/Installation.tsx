@@ -1,7 +1,7 @@
 const steps = [
   ["01", "Download", "Save the current extension package."],
   ["02", "Load", "Open chrome://extensions, enable Developer mode, then choose Load unpacked."],
-  ["03", "Watch", "Open YouTube or Netflix, turn on captions, then shape them from Subtle."],
+  ["03", "Enable", "Open YouTube or Netflix, then enable that service from Subtle."],
 ];
 
 export function Installation() {
