@@ -75,3 +75,51 @@ test("secondary subtitle sources follow platform capabilities", () => {
 test("the previous YouTube source value migrates to platform captions", () => {
   assert.equal(SubtleState.normaliseState({ secondarySource: "youtube" }).secondarySource, "platform");
 });
+
+test("advanced caption controls are bounded and unknown alignment is rejected", () => {
+  const state = SubtleState.normaliseState({
+    fontWeight: 1200,
+    lineHeight: 0.2,
+    letterSpacing: 99,
+    captionPadding: -3,
+    captionRadius: 90,
+    backgroundBlur: 99,
+    shadowIntensity: -2,
+    strokeColor: "not-a-colour",
+    strokeOpacity: 140,
+    textAlign: "justify",
+    movieWidth: 200
+  });
+
+  assert.equal(state.fontWeight, 900);
+  assert.equal(state.lineHeight, 1);
+  assert.equal(state.letterSpacing, 4);
+  assert.equal(state.captionPadding, 0);
+  assert.equal(state.captionRadius, 20);
+  assert.equal(state.backgroundBlur, 20);
+  assert.equal(state.shadowIntensity, 0);
+  assert.equal(state.strokeColor, SubtleState.DEFAULT_STATE.strokeColor);
+  assert.equal(state.strokeOpacity, 100);
+  assert.equal(state.textAlign, "auto");
+  assert.equal(state.movieWidth, 64);
+});
+
+test("legacy bottom placement keeps the site's position while legacy top remains manual", () => {
+  assert.equal(SubtleState.normaliseState({ position: "bottom" }).followNativePosition, true);
+  assert.equal(SubtleState.normaliseState({ position: "top" }).followNativePosition, false);
+  assert.equal(SubtleState.normaliseState({ position: "top", followNativePosition: true }).followNativePosition, true);
+});
+
+test("custom blocked terms are stored as bounded plain text", () => {
+  const state = SubtleState.normaliseState({ customBlockedTerms: `  sponsor\u0000\n${"x".repeat(1200)}  ` });
+
+  assert.equal(state.customBlockedTerms.includes("\u0000"), false);
+  assert.equal(state.customBlockedTerms.length, 1000);
+});
+
+test("custom block-filter editing preserves spaces and new lines", () => {
+  assert.equal(
+    SubtleState.normaliseState({ customBlockedTerms: "sponsored by\n" }).customBlockedTerms,
+    "sponsored by\n"
+  );
+});

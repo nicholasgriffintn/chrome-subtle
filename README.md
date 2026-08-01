@@ -4,13 +4,15 @@ Subtle makes captions easier to read on YouTube and Netflix. It styles each site
 
 ## What it does
 
-- Restyle native captions with readable presets, seven local font families, independent text/backdrop/window colours and opacity, five edge styles, size and position controls.
+- Restyle native captions with nine presets, seven local font families, independent surface and edge controls, alignment, spacing, blur, size and manual height controls.
+- Wrap long YouTube captions into a centred, movie-like reading block or retain the site's original line width.
+- Keep YouTube's native draggable caption position by default; choose a manual top or bottom anchor only when you need an exact height.
 - Add a second caption language on YouTube when the video supplies that track.
 - Add a second language supplied with the current Netflix title.
 - Add a local SRT or VTT second line on YouTube or Netflix.
 - Keep the second line attached to the complete native caption group as Netflix moves dialogue around the frame.
 - Shift imported captions forwards or backwards to correct timing.
-- Hide simple bracketed sound cues such as `[Music]` when requested.
+- Filter sound descriptions, music cues, speaker labels and custom literal words or phrases when requested.
 - Keep all preferences and imported files on the device.
 
 ## Install locally
@@ -27,6 +29,8 @@ The companion site is in `website/`. Its download is a development preview; the 
 ## Privacy
 
 Subtle processes the current playback time, native caption elements and the caption metadata already supplied to supported video pages. On YouTube, it reuses the player's caption request to ask YouTube for the selected translated track. On Netflix, it requests the selected title track from a Netflix-provided CDN URL inside the active tab. Netflix track URLs and caption text are not written to extension storage.
+
+When the popup opens on a supported page, it may capture one low-quality image of the visible tab for the local style preview. The image remains in popup memory only and is discarded when the popup closes; it is never stored or transmitted by Subtle.
 
 Subtle has no accounts, analytics, advertising, remote scripts or translation service. Imported files are not uploaded. Site access is optional: Subtle requests the current supported service only when you select its enable button, and removes its registered scripts if that access is revoked. `activeTab` identifies the service opened with the toolbar button, `scripting` registers its local bridge and runtime, and `storage` keeps settings on-device.
 

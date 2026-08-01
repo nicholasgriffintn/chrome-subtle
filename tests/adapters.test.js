@@ -199,6 +199,19 @@ test("text changes inside a native caption refresh anchoring", () => {
   );
 });
 
+test("filtered native captions remain discoverable so filters can be removed", () => {
+  const hiddenCaption = captionCandidate("[Music]");
+  hiddenCaption.style = { visibility: "hidden" };
+  const root = {
+    querySelectorAll: (selector) => selector === ".caption-window" ? [hiddenCaption] : []
+  };
+
+  assert.deepEqual(
+    SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.youtube, root),
+    [hiddenCaption]
+  );
+});
+
 function videoCandidate({ paused, closest, area = 640 * 360, parent = null }) {
   return {
     isConnected: true,

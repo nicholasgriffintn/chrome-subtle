@@ -3,11 +3,17 @@
   --subtle-text-colour: #fffaf0;
   --subtle-caption-background: rgba(11, 16, 19, 0.76);
   --subtle-window-background: transparent;
-  --subtle-window-padding: 0.2em;
+  --subtle-window-padding: 6px;
+  --subtle-caption-radius: 4px;
+  --subtle-background-blur: 0px;
   --subtle-edge-stroke: 3px rgba(0, 0, 0, 0.94);
   --subtle-edge-shadow: none;
   --subtle-font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   --subtle-font-variant: normal;
+  --subtle-font-weight: 650;
+  --subtle-line-height: 1.24;
+  --subtle-letter-spacing: 0.2px;
+  --subtle-movie-width: 42ch;
   --subtle-offset: 12%;
 }
 
@@ -20,9 +26,13 @@
   font-family: var(--subtle-font-family) !important;
   font-variant: var(--subtle-font-variant) !important;
   font-size: var(--subtle-font-size) !important;
-  font-weight: 650 !important;
-  line-height: 1.24 !important;
-  letter-spacing: 0.005em !important;
+  font-weight: var(--subtle-font-weight) !important;
+  line-height: var(--subtle-line-height) !important;
+  letter-spacing: var(--subtle-letter-spacing) !important;
+  padding: var(--subtle-window-padding) !important;
+  border-radius: var(--subtle-caption-radius) !important;
+  -webkit-backdrop-filter: blur(var(--subtle-background-blur)) !important;
+  backdrop-filter: blur(var(--subtle-background-blur)) !important;
   -webkit-text-stroke: var(--subtle-edge-stroke) !important;
   paint-order: stroke fill !important;
   text-shadow: var(--subtle-edge-shadow) !important;
@@ -33,9 +43,37 @@
   pointer-events: none !important;
 }
 
-:root[data-subtle-enabled][data-subtle-position="top"] .caption-window {
+:root[data-subtle-enabled] .subtle-blocked-caption {
+  visibility: hidden !important;
+}
+
+:root[data-subtle-enabled][data-subtle-follow-position="false"][data-subtle-position="top"] .caption-window {
   top: var(--subtle-offset) !important;
   bottom: auto !important;
+}
+
+:root[data-subtle-enabled][data-subtle-follow-position="false"][data-subtle-position="bottom"] .caption-window {
+  top: auto !important;
+  bottom: var(--subtle-offset) !important;
+}
+
+:root[data-subtle-enabled][data-subtle-movie-like="true"] .caption-window .captions-text {
+  width: max-content !important;
+  max-width: min(var(--subtle-movie-width), calc(100vw - 32px)) !important;
+  margin-inline: auto !important;
+  white-space: normal !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="left"] .caption-window .captions-text {
+  text-align: left !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="center"] .caption-window .captions-text {
+  text-align: center !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="right"] .caption-window .captions-text {
+  text-align: right !important;
 }
 
 #movie_player,

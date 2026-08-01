@@ -23,6 +23,27 @@ test("edge styles produce distinct stroke and shadow treatments", () => {
   assert.equal(SubtleOverlay.edgeTreatment("outline", 4).stroke, "4px rgba(0, 0, 0, 0.94)");
 });
 
+test("edge styling respects configured colour, opacity and shadow intensity", () => {
+  const edge = SubtleOverlay.edgeTreatment("outline", 4, "#123456", 50, 8);
+
+  assert.equal(edge.stroke, "4px rgba(18, 52, 86, 0.5)");
+  assert.match(edge.shadow, /0\.08em/);
+  assert.match(SubtleOverlay.edgeTreatment("drop_shadow", 0, "#000000", 90, 8).shadow, /0\.08em/);
+});
+
+test("readability mode strengthens typography without overwriting stored preferences", () => {
+  assert.deepEqual(
+    SubtleOverlay.typography({
+      fontFamily: "cursive",
+      fontWeight: 400,
+      lineHeight: 1.1,
+      letterSpacing: -1,
+      readabilityMode: true
+    }),
+    { fontFamily: "proportional_sans", fontWeight: 600, lineHeight: 1.5, letterSpacing: 0.5 }
+  );
+});
+
 test("dual captions anchor directly below the native caption box", () => {
   const placement = SubtleOverlay.calculateAnchoredPlacement(
     { left: 100, top: 50, right: 1100, bottom: 650, width: 1000, height: 600 },
@@ -143,6 +164,45 @@ test("the second track keeps its configured scale and colour while sharing capti
   } finally {
     global.document = originalDocument;
   }
+});
+
+test("movie-like layout and spacing controls reach the second-line overlay", () => {
+  const originalDocument = global.document;
+  global.document = { createElement: createFakeElement };
+  try {
+    const player = createFakeElement();
+    player.querySelector = () => null;
+    const host = SubtleOverlay.create(player);
+    const state = {
+      ...SubtleState.createDefaultState(),
+      movieLike: true,
+      movieWidth: 42,
+      captionPadding: 8,
+      captionRadius: 6,
+      backgroundBlur: 4,
+      textAlign: "left"
+    };
+
+    SubtleOverlay.render(host, { text: "A deliberately long caption line" }, state);
+
+    assert.equal(host.dataset.movieLike, "true");
+    assert.equal(host.style.properties.get("--subtle-overlay-max-width"), "42ch");
+    assert.equal(host.style.properties.get("--subtle-overlay-padding"), "8px");
+    assert.equal(host.style.properties.get("--subtle-overlay-radius"), "6px");
+    assert.equal(host.style.properties.get("--subtle-overlay-blur"), "4px");
+    assert.equal(host.style.properties.get("--subtle-overlay-align"), "left");
+    assert.equal(host.style.properties.get("--subtle-overlay-row-gap"), "5px");
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
+test("second-line row spacing grows with padding, edge width and shadow", () => {
+  const compact = SubtleOverlay.captionRowGap({ captionPadding: 2, outlineWidth: 1, shadowIntensity: 0 });
+  const spacious = SubtleOverlay.captionRowGap({ captionPadding: 16, outlineWidth: 7, shadowIntensity: 20 });
+
+  assert.ok(compact >= 2);
+  assert.ok(spacious > compact);
 });
 
 test("the native caption gap clears styled multi-line caption overflow", () => {

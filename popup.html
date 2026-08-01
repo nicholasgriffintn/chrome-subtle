@@ -30,161 +30,146 @@
     </section>
 
     <div id="full-popup" hidden>
-      <section class="stage" aria-label="Subtitle preview">
-      <div class="film-grain" aria-hidden="true"></div>
-      <span class="stage-label">Live style</span>
-      <div class="preview-window">
-        <div class="preview-lines">
-          <p id="primary-preview">There is more to hear than sound.</p>
-          <p id="secondary-preview">Hay más que escuchar que el sonido.</p>
+      <div class="preview-dock">
+        <section class="stage" aria-label="Subtitle preview">
+        <div class="film-grain" aria-hidden="true"></div>
+        <span class="stage-label">Live style</span>
+        <div class="preview-window">
+          <div class="preview-lines">
+            <p id="primary-preview">Every frame deserves room to breathe.</p>
+            <p id="secondary-preview">Hay más que escuchar que el sonido.</p>
+          </div>
+        </div>
+        </section>
+
+        <div class="site-status" id="site-status" role="status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <strong id="platform">Open YouTube or Netflix</strong>
+          <span id="status-detail">waiting for a player</span>
         </div>
       </div>
-      </section>
 
-      <div class="site-status" id="site-status" role="status">
-        <span class="status-dot" aria-hidden="true"></span>
-        <strong id="platform">Open YouTube or Netflix</strong>
-        <span id="status-detail">waiting for a player</span>
-      </div>
+      <nav class="settings-tabs" role="tablist" aria-label="Subtitle settings">
+        <button id="tab-main" type="button" role="tab" aria-selected="true" aria-controls="panel-main">Main</button>
+        <button id="tab-style" type="button" role="tab" aria-selected="false" aria-controls="panel-style" tabindex="-1">Style</button>
+        <button id="tab-custom" type="button" role="tab" aria-selected="false" aria-controls="panel-custom" tabindex="-1">Custom</button>
+      </nav>
 
       <section class="workspace">
-      <div class="mode-switch" role="group" aria-label="Subtitle mode">
-        <button type="button" data-mode="single">Polish</button>
-        <button type="button" data-mode="dual">Dual</button>
-      </div>
-
-      <section class="panel source-panel">
-        <div class="panel-heading">
-          <div>
-            <span class="eyebrow">Second line</span>
-            <h2>Choose its source</h2>
+        <section id="panel-main" class="tab-panel" role="tabpanel" aria-labelledby="tab-main">
+          <div class="mode-switch" role="group" aria-label="Subtitle mode">
+            <button type="button" data-mode="single">Polish</button>
+            <button type="button" data-mode="dual">Dual</button>
           </div>
-          <span id="cue-count" class="count">—</span>
-        </div>
 
-        <label class="field" id="source-field" for="secondary-source">
-          <span>Subtitle source</span>
-          <select id="secondary-source">
-            <option id="platform-source-option" value="platform">Platform captions</option>
-            <option value="upload">Local SRT or VTT</option>
-          </select>
-        </label>
-
-        <label class="field" id="language-field" for="target-language">
-          <span id="language-label">Second language</span>
-          <select id="target-language">
-            <option value="">Waiting for language options…</option>
-          </select>
-        </label>
-
-        <div class="upload-row" id="upload-row">
-          <label class="upload-button">
-            <input id="subtitle-file" type="file" accept=".srt,.vtt,text/vtt,application/x-subrip">
-            <span id="upload-label">Import subtitle file</span>
-          </label>
-          <button id="clear-upload" class="quiet-button" type="button">Clear</button>
-        </div>
-        <p id="source-note" role="status" class="source-note"></p>
-      </section>
-
-      <section class="panel style-panel">
-        <div class="panel-heading">
-          <div>
-            <span class="eyebrow">Appearance</span>
-            <h2>Make it readable</h2>
-          </div>
-        </div>
-
-        <div class="preset-row" aria-label="Style presets">
-          <button type="button" data-preset="cinema">Cinema</button>
-          <button type="button" data-preset="soft">Soft</button>
-          <button type="button" data-preset="contrast">Contrast</button>
-        </div>
-
-        <label class="range-field" for="font-size">
-          <span>Size <output id="font-size-output">34 px</output></span>
-          <input id="font-size" type="range" min="18" max="64" step="1">
-        </label>
-
-        <div class="control-grid">
-          <label class="field field-wide" for="font-family">
-            <span>Typeface</span>
-            <select id="font-family">
-              <option value="monospaced_serif">Monospaced serif</option>
-              <option value="proportional_serif">Proportional serif</option>
-              <option value="monospaced_sans">Monospaced sans-serif</option>
-              <option value="proportional_sans">Proportional sans-serif</option>
-              <option value="casual">Casual</option>
-              <option value="cursive">Cursive</option>
-              <option value="small_caps">Small capitals</option>
-            </select>
-          </label>
-          <label class="field" for="edge-style">
-            <span>Character edge</span>
-            <select id="edge-style">
-              <option value="none">No edge</option>
-              <option value="drop_shadow">Drop shadow</option>
-              <option value="raised">Raised</option>
-              <option value="depressed">Depressed</option>
-              <option value="outline">Outline</option>
-            </select>
-          </label>
-          <label class="field" for="position">
-            <span>Position</span>
-            <select id="position">
-              <option value="bottom">Bottom</option>
-              <option value="top">Top</option>
-            </select>
-          </label>
-        </div>
-
-        <details class="surface-controls" open>
-          <summary>Colour and layers</summary>
-          <div class="colour-grid">
-            <label class="colour-field" for="text-colour">
-              <span>Primary text</span>
-              <input id="text-colour" type="color">
+          <section class="panel source-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Second line</span><h2>Choose its source</h2></div>
+              <span id="cue-count" class="count">—</span>
+            </div>
+            <label class="field" id="source-field" for="secondary-source">
+              <span>Subtitle source</span>
+              <select id="secondary-source">
+                <option id="platform-source-option" value="platform">Platform captions</option>
+                <option value="upload">Local SRT or VTT</option>
+              </select>
             </label>
-            <label class="colour-field" for="secondary-colour">
-              <span>Second line</span>
-              <input id="secondary-colour" type="color">
+            <label class="field" id="language-field" for="target-language">
+              <span id="language-label">Second language</span>
+              <select id="target-language"><option value="">Waiting for language options…</option></select>
             </label>
-            <label class="colour-field" for="background-colour">
-              <span>Backdrop</span>
-              <input id="background-colour" type="color">
-            </label>
-            <label class="colour-field" for="window-colour">
-              <span>Window</span>
-              <input id="window-colour" type="color">
-            </label>
-          </div>
-          <label class="range-field" for="text-opacity">
-            <span>Text opacity <output id="text-opacity-output">100%</output></span>
-            <input id="text-opacity" type="range" min="0" max="100" step="1">
-          </label>
-          <label class="range-field" for="background-opacity">
-            <span>Backdrop opacity <output id="background-output">76%</output></span>
-            <input id="background-opacity" type="range" min="0" max="100" step="1">
-          </label>
-          <label class="range-field" for="window-opacity">
-            <span>Window opacity <output id="window-opacity-output">0%</output></span>
-            <input id="window-opacity" type="range" min="0" max="100" step="1">
-          </label>
-        </details>
+            <div class="upload-row" id="upload-row">
+              <label class="upload-button">
+                <input id="subtitle-file" type="file" accept=".srt,.vtt,text/vtt,application/x-subrip">
+                <span id="upload-label">Import subtitle file</span>
+              </label>
+              <button id="clear-upload" class="quiet-button" type="button">Clear</button>
+            </div>
+            <p id="source-note" role="status" class="source-note"></p>
+          </section>
 
-        <details class="timing-controls">
-          <summary>Timing and cleanup</summary>
-          <label class="range-field" for="delay">
-            <span>Delay <output id="delay-output">0 ms</output></span>
-            <input id="delay" type="range" min="-2000" max="2000" step="100">
-          </label>
-          <label class="check-row">
-            <span><strong>Hide sound cues</strong><small>Remove lines such as [Music] and (Applause)</small></span>
-            <input id="hide-sound-cues" type="checkbox">
-            <i aria-hidden="true"></i>
-          </label>
-        </details>
-      </section>
+          <section class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Quick looks</span><h2>Start with a preset</h2></div></div>
+            <div id="preset-grid" class="preset-grid" aria-label="Style presets"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Placement</span><h2>Shape the reading area</h2></div></div>
+            <label class="check-row">
+              <span><strong>Follow site position</strong><small>Keep YouTube's native draggable placement.</small></span>
+              <input id="follow-native-position" type="checkbox"><i aria-hidden="true"></i>
+            </label>
+            <div class="control-grid placement-controls">
+              <label class="field" for="position"><span>Anchor</span><select id="position"><option value="bottom">Bottom</option><option value="top">Top</option></select></label>
+              <label class="range-field compact-range" for="offset"><span>Height <output id="offset-output">12%</output></span><input id="offset" type="range" min="0" max="40" step="1"></label>
+            </div>
+            <label class="check-row">
+              <span><strong>Movie-like subtitles</strong><small>Wrap long captions into a centred reading block.</small></span>
+              <input id="movie-like" type="checkbox"><i aria-hidden="true"></i>
+            </label>
+            <label class="range-field" for="movie-width"><span>Reading width <output id="movie-width-output">42 ch</output></span><input id="movie-width" type="range" min="28" max="64" step="1"></label>
+            <label class="check-row">
+              <span><strong>Readability mode</strong><small>Use stronger spacing and a clear sans-serif face.</small></span>
+              <input id="readability-mode" type="checkbox"><i aria-hidden="true"></i>
+            </label>
+          </section>
+        </section>
+
+        <section id="panel-style" class="tab-panel" role="tabpanel" aria-labelledby="tab-style" hidden>
+          <section class="panel first-panel">
+            <div class="panel-heading"><div><span class="eyebrow">Typography</span><h2>Set the voice</h2></div></div>
+            <label class="range-field" for="font-size"><span>Size <output id="font-size-output">34 px</output></span><input id="font-size" type="range" min="18" max="64" step="1"></label>
+            <label class="range-field" for="secondary-scale"><span>Second-line scale <output id="secondary-scale-output">82%</output></span><input id="secondary-scale" type="range" min="55" max="110" step="1"></label>
+            <div class="control-grid">
+              <label class="field field-wide" for="font-family"><span>Typeface</span><select id="font-family">
+                <option value="monospaced_serif">Monospaced serif</option><option value="proportional_serif">Proportional serif</option>
+                <option value="monospaced_sans">Monospaced sans-serif</option><option value="proportional_sans">Proportional sans-serif</option>
+                <option value="casual">Casual</option><option value="cursive">Cursive</option><option value="small_caps">Small capitals</option>
+              </select></label>
+              <label class="field" for="font-weight"><span>Weight</span><select id="font-weight"><option value="400">Regular</option><option value="500">Medium</option><option value="550">Book</option><option value="600">Semibold</option><option value="650">Strong</option><option value="700">Bold</option><option value="800">Heavy</option><option value="900">Black</option></select></label>
+              <label class="field" for="text-align"><span>Alignment</span><select id="text-align"><option value="auto">From site</option><option value="left">Left</option><option value="center">Centre</option><option value="right">Right</option></select></label>
+            </div>
+            <label class="range-field" for="line-height"><span>Line height <output id="line-height-output">1.24</output></span><input id="line-height" type="range" min="1" max="2" step="0.05"></label>
+            <label class="range-field" for="letter-spacing"><span>Letter spacing <output id="letter-spacing-output">0.2 px</output></span><input id="letter-spacing" type="range" min="-1" max="4" step="0.1"></label>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Surface</span><h2>Control every layer</h2></div></div>
+            <div class="colour-grid">
+              <label class="colour-field" for="text-colour"><span>Primary text</span><input id="text-colour" type="color"></label>
+              <label class="colour-field" for="secondary-colour"><span>Second line</span><input id="secondary-colour" type="color"></label>
+              <label class="colour-field" for="background-colour"><span>Backdrop</span><input id="background-colour" type="color"></label>
+              <label class="colour-field" for="window-colour"><span>Window</span><input id="window-colour" type="color"></label>
+              <label class="colour-field" for="stroke-colour"><span>Character edge</span><input id="stroke-colour" type="color"></label>
+            </div>
+            <div class="control-grid top-gap">
+              <label class="field" for="edge-style"><span>Edge style</span><select id="edge-style"><option value="none">No edge</option><option value="drop_shadow">Drop shadow</option><option value="raised">Raised</option><option value="depressed">Depressed</option><option value="outline">Outline</option></select></label>
+              <label class="range-field compact-range" for="outline-width"><span>Width <output id="outline-width-output">3 px</output></span><input id="outline-width" type="range" min="0" max="8" step="1"></label>
+            </div>
+            <label class="range-field" for="text-opacity"><span>Text opacity <output id="text-opacity-output">100%</output></span><input id="text-opacity" type="range" min="0" max="100" step="1"></label>
+            <label class="range-field" for="stroke-opacity"><span>Edge opacity <output id="stroke-opacity-output">94%</output></span><input id="stroke-opacity" type="range" min="0" max="100" step="1"></label>
+            <label class="range-field" for="background-opacity"><span>Backdrop opacity <output id="background-output">76%</output></span><input id="background-opacity" type="range" min="0" max="100" step="1"></label>
+            <label class="range-field" for="window-opacity"><span>Window opacity <output id="window-opacity-output">0%</output></span><input id="window-opacity" type="range" min="0" max="100" step="1"></label>
+            <label class="range-field" for="shadow-intensity"><span>Shadow <output id="shadow-intensity-output">0</output></span><input id="shadow-intensity" type="range" min="0" max="20" step="1"></label>
+            <label class="range-field" for="background-blur"><span>Backdrop blur <output id="background-blur-output">0 px</output></span><input id="background-blur" type="range" min="0" max="20" step="1"></label>
+            <label class="range-field" for="caption-padding"><span>Padding <output id="caption-padding-output">6 px</output></span><input id="caption-padding" type="range" min="0" max="20" step="1"></label>
+            <label class="range-field" for="caption-radius"><span>Corner radius <output id="caption-radius-output">4 px</output></span><input id="caption-radius" type="range" min="0" max="20" step="1"></label>
+          </section>
+        </section>
+
+        <section id="panel-custom" class="tab-panel" role="tabpanel" aria-labelledby="tab-custom" hidden>
+          <section class="panel first-panel">
+            <div class="panel-heading"><div><span class="eyebrow">Block filters</span><h2>Remove visual noise</h2></div></div>
+            <label class="check-row"><span><strong>Sound descriptions</strong><small>Hide bracketed cues such as [door closes].</small></span><input id="hide-sound-cues" type="checkbox"><i aria-hidden="true"></i></label>
+            <label class="check-row"><span><strong>Music cues</strong><small>Hide music notes and labelled music lines.</small></span><input id="block-music" type="checkbox"><i aria-hidden="true"></i></label>
+            <label class="check-row"><span><strong>Speaker labels</strong><small>Hide all-caps labels such as NARRATOR:</small></span><input id="block-speaker-labels" type="checkbox"><i aria-hidden="true"></i></label>
+            <label class="field" for="custom-blocked-terms"><span>Custom block filters</span><textarea id="custom-blocked-terms" maxlength="1000" rows="4" placeholder="One literal word or phrase per line"></textarea><small>Case-insensitive literal matches. Regular expressions are not used.</small></label>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Timing</span><h2>Fine-tune synchronisation</h2></div></div>
+            <label class="range-field" for="delay"><span>Second-line delay <output id="delay-output">0 ms</output></span><input id="delay" type="range" min="-2000" max="2000" step="100"></label>
+          </section>
+        </section>
       </section>
 
       <footer>
@@ -195,6 +180,10 @@
     </div>
   </main>
   <script src="lib/state.js"></script>
+  <script src="lib/presets.js"></script>
+  <script src="lib/popup-tabs.js"></script>
+  <script src="lib/preview-background.js"></script>
+  <script src="lib/preview-layout.js"></script>
   <script src="lib/site-access.js"></script>
   <script src="lib/popup-access.js"></script>
   <script src="lib/cues.js"></script>

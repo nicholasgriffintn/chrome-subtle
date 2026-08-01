@@ -67,3 +67,25 @@ test("invalid and zero-length cues are discarded", () => {
 test("subtitle fingerprints distinguish equal-length file revisions", () => {
   assert.notEqual(SubtleCues.fingerprintText("first"), SubtleCues.fingerprintText("third"));
 });
+
+test("block filters distinguish descriptions, music and speaker labels", () => {
+  assert.equal(SubtleCues.shouldBlockCue("[door closes]", { hideSoundCues: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("♪ instrumental ♪", { blockMusic: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("NARRATOR: Previously on…", { blockSpeakerLabels: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("I love music", { blockMusic: true }), false);
+  assert.equal(SubtleCues.shouldBlockCue("A normal line", {
+    hideSoundCues: true,
+    blockMusic: true,
+    blockSpeakerLabels: true
+  }), false);
+});
+
+test("custom block filters use safe literal, case-insensitive matching", () => {
+  const filters = { customBlockedTerms: "Sponsored by\n[AD]\n.*" };
+
+  assert.equal(SubtleCues.shouldBlockCue("SPONSORED BY Acme", filters), true);
+  assert.equal(SubtleCues.shouldBlockCue("This contains [ad] copy", filters), true);
+  assert.equal(SubtleCues.shouldBlockCue("ordinary dialogue", filters), false);
+  assert.equal(SubtleCues.shouldBlockCue("a regex-shaped phrase", filters), false);
+  assert.equal(SubtleCues.shouldBlockCue("The literal token .* is shown", filters), true);
+});

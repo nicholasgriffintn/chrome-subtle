@@ -85,6 +85,39 @@ test("popup exposes dual mode, local import and privacy status", () => {
   assert.doesNotMatch(controller, /Netflix does not expose a stable second track/);
 });
 
+test("popup organises parity controls into accessible main, style and custom tabs", () => {
+  const popup = read("popup.html");
+  const presets = require("../lib/presets.js");
+
+  assert.match(popup, /role="tablist"/);
+  assert.match(popup, /role="tab"[^>]*>Main</);
+  assert.match(popup, /role="tab"[^>]*>Style</);
+  assert.match(popup, /role="tab"[^>]*>Custom</);
+  assert.match(popup, /id="follow-native-position"/);
+  assert.match(popup, /id="movie-like"/);
+  assert.match(popup, /id="text-align"/);
+  assert.match(popup, /id="readability-mode"/);
+  assert.match(popup, /id="custom-blocked-terms"/);
+  assert.equal(Object.keys(presets.all()).length, 9);
+});
+
+test("live preview remains visible, clips safely and can use an active-tab snapshot", () => {
+  const popup = read("popup.html");
+  const popupCss = read("popup.css");
+  const controller = read("lib/popup-controller.js");
+
+  assert.match(popup, /class="preview-dock"/);
+  assert.match(popup, /lib[/]preview-background[.]js/);
+  assert.match(popup, /lib[/]preview-layout[.]js/);
+  assert.match(popupCss, /[.]preview-dock\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;/s);
+  assert.match(popupCss, /[.]preview-window\s*\{[^}]*overflow:\s*hidden;/s);
+  assert.match(popupCss, /[.]preview-lines\s*\{[^}]*min-width:\s*0;/s);
+  assert.match(popupCss, /overflow-x:\s*clip/);
+  assert.doesNotMatch(popupCss, /overflow-x:\s*hidden/);
+  assert.match(controller, /SubtlePreviewBackground[.]capture/);
+  assert.match(controller, /SubtlePreviewLayout[.]fit/);
+});
+
 test("dual captions follow native captions without displacing site containers", () => {
   const runtime = read("lib/runtime.js");
   const css = read("content.css");
@@ -92,7 +125,6 @@ test("dual captions follow native captions without displacing site containers", 
   assert.match(runtime, /dataset[.]subtleMode = state[.]mode/);
   assert.match(runtime, /--subtle-offset/);
   assert.doesNotMatch(runtime, /--subtle-primary-offset/);
-  assert.doesNotMatch(css, /caption-visual-line/);
   assert.match(css, /box-shadow: 0 0 0 var\(--subtle-window-padding\) var\(--subtle-window-background\)/);
   assert.doesNotMatch(css, /caption-window[^\{]*\{\s*background: var\(--subtle-window-background\)/);
   assert.match(runtime, /SubtleRuntimeContext[.]hasContext/);
@@ -102,10 +134,17 @@ test("dual captions follow native captions without displacing site containers", 
   assert.match(runtime, /pendingCueSourceKey/);
   assert.doesNotMatch(css, /[.]player-timedtext\s*\{[^}]*\bbottom:/s);
   assert.doesNotMatch(css, /[.]ytp-caption-window-container\s*\{[^}]*\b(?:top|bottom):/s);
-  assert.match(css, /data-subtle-position="top"[^\{]*[.]caption-window\s*\{[^}]*\btop: var\(--subtle-offset\)/s);
-  assert.match(css, /data-subtle-position="top"[^\{]*[.]caption-window\s*\{[^}]*\bbottom: auto/s);
+  assert.match(css, /data-subtle-follow-position="false"[^\{]*data-subtle-position="top"[^\{]*[.]caption-window\s*\{[^}]*\btop: var\(--subtle-offset\)/s);
+  assert.match(css, /data-subtle-follow-position="false"[^\{]*data-subtle-position="bottom"[^\{]*[.]caption-window\s*\{[^}]*\bbottom: var\(--subtle-offset\)/s);
+  assert.match(css, /data-subtle-movie-like="true"/);
+  assert.match(css, /--subtle-movie-width/);
+  assert.match(runtime, /dataset[.]subtleFollowPosition/);
+  assert.match(runtime, /nativeCaptionElements/);
+  assert.match(css, /[.]subtle-blocked-caption/);
   assert.match(overlay, /:host \{[^}]*overflow: hidden;/s);
   assert.match(overlay, /[.]window \{[^}]*box-sizing: border-box;/s);
+  assert.match(overlay, /[.]row \{[^}]*display: flex;/s);
+  assert.match(overlay, /[.]segment \{[^}]*display: inline-block;/s);
 });
 
 function read(relativePath) {
