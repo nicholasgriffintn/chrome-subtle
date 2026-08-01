@@ -7,6 +7,7 @@ test("site access maps exact supported HTTPS hosts", () => {
   assert.equal(SiteAccess.forUrl("https://www.youtube-nocookie.com/embed/123").id, "youtube");
   assert.equal(SiteAccess.forUrl("https://www.netflix.com/watch/123").id, "netflix");
   assert.equal(SiteAccess.forUrl("https://www.bbc.co.uk/iplayer/episode/p0gd2b0j/example").id, "bbc");
+  assert.equal(SiteAccess.forUrl("https://www.disneyplus.com/en-gb/play/14ca4815-0611-45d5-948c-d911d78efcf2").id, "disney");
   assert.equal(SiteAccess.forUrl("http://www.youtube.com/watch?v=123"), null);
   assert.equal(SiteAccess.forUrl("https://www.youtube.com.example.test/watch?v=123"), null);
   assert.equal(SiteAccess.forUrl("not a url"), null);
@@ -24,9 +25,9 @@ test("each platform produces an isolated runtime and only private APIs require a
     assert.ok(runtime.js.indexOf("lib/cues.js") < runtime.js.indexOf("lib/platform-captions.js"));
     assert.ok(runtime.js.indexOf("lib/platform-captions.js") < runtime.js.indexOf("lib/runtime.js"));
     assert.ok(runtime.js.indexOf("lib/runtime.js") < runtime.js.indexOf("content.js"));
-    if (platform.pageBridge) {
+    if (platform.pageBridgeFiles?.length) {
       assert.equal(bridge.runAt, "document_start");
-      assert.deepEqual(bridge.js, [platform.pageBridge]);
+      assert.deepEqual(bridge.js, platform.pageBridgeFiles);
     } else {
       assert.equal(bridge, undefined);
     }

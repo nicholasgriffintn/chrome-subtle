@@ -48,6 +48,18 @@ test("Netflix settings wait honestly until title tracks are captured", () => {
   assert.match(view.note, /Start Netflix playback/);
 });
 
+test("Disney settings wait for the title HLS caption tracks", () => {
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), {
+    platformId: "disney",
+    sourceLabel: "Disney+ captions",
+    availableTracks: []
+  });
+
+  assert.equal(view.languageDisabled, true);
+  assert.equal(view.languageOptions[0].label, "Waiting for Disney+ captions…");
+  assert.match(view.note, /Start Disney\+ playback/);
+});
+
 test("unsupported pages expose only the local file source", () => {
   const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null);
 

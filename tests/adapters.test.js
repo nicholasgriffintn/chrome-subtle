@@ -6,6 +6,7 @@ test("supported hostnames map to explicit site adapters", () => {
   assert.equal(SubtitleAdapters.forHostname("www.youtube.com").id, "youtube");
   assert.equal(SubtitleAdapters.forHostname("www.netflix.com").id, "netflix");
   assert.equal(SubtitleAdapters.forHostname("www.bbc.co.uk").id, "bbc");
+  assert.equal(SubtitleAdapters.forHostname("www.disneyplus.com").id, "disney");
   assert.equal(SubtitleAdapters.forHostname("evil-youtube.com"), null);
 });
 
@@ -299,6 +300,55 @@ test("BBC discovery traverses the open Toucan player shadow root", () => {
   assert.equal(SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.bbc, root), video);
   assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.bbc, root), paragraph);
   assert.deepEqual(SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.bbc, root), [leaf]);
+});
+
+test("Disney discovery traverses its open player shadow root", () => {
+  const line = captionCandidate("Caption inside Disney player");
+  const video = videoCandidate({ paused: false });
+  const player = { querySelector: () => null };
+  video.closest = (selector) => selector.includes(".btm-media-client") ? player : null;
+  const shadowRoot = {
+    host: null,
+    querySelectorAll(selector) {
+      if (selector === "disney-web-player") return [];
+      if (selector.includes("video.hive-video")) return [video];
+      if (selector.includes(".dss-subtitle-renderer-line")) return [line];
+      return [];
+    }
+  };
+  const playerHost = { shadowRoot };
+  shadowRoot.host = playerHost;
+  const root = {
+    querySelectorAll(selector) {
+      return selector === "disney-web-player" ? [playerHost] : [];
+    }
+  };
+
+  assert.deepEqual(SubtitleAdapters.captionRoots(SubtitleAdapters.ADAPTERS.disney, root), [root, shadowRoot]);
+  assert.equal(SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.disney, root), video);
+  assert.equal(SubtitleAdapters.findPlayer(SubtitleAdapters.ADAPTERS.disney, root, { video }), player);
+  assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.disney, root), line);
+});
+
+test("Disney discovery traverses the newer player UI shadow root", () => {
+  const line = captionCandidate("Caption inside Disney UI");
+  const shadowRoot = {
+    host: null,
+    querySelectorAll(selector) {
+      if (selector.includes(".hive-subtitle-renderer-line")) return [line];
+      return [];
+    }
+  };
+  const playerUi = { shadowRoot };
+  shadowRoot.host = playerUi;
+  const root = {
+    querySelectorAll(selector) {
+      return selector === "disney-web-player-ui" ? [playerUi] : [];
+    }
+  };
+
+  assert.deepEqual(SubtitleAdapters.captionRoots(SubtitleAdapters.ADAPTERS.disney, root), [root, shadowRoot]);
+  assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.disney, root), line);
 });
 
 test("filtered native captions remain discoverable so filters can be removed", () => {

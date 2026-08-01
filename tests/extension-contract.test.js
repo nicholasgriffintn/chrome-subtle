@@ -27,6 +27,7 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(isolated.js.indexOf("lib/runtime.js") < isolated.js.indexOf("content.js"));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("youtube-page-bridge.js") && script.matches.some((match) => match.includes("youtube"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("netflix-page-bridge.js") && script.matches.some((match) => match.includes("netflix"))));
+  assert.ok(mainWorldScripts.some((script) => script.js.includes("disney-page-bridge.js") && script.matches.some((match) => match.includes("disneyplus"))));
   assert.equal(mainWorldScripts.some((script) => script.matches.some((match) => match.includes("bbc.co.uk"))), false);
   assert.ok(registrations.some((script) => script.world === "ISOLATED" && script.matches.some((match) => match.includes("bbc.co.uk"))));
   assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
@@ -36,8 +37,10 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
 test("the page bridge has no extension API access and the content entry point only orchestrates", () => {
   const bridge = read("youtube-page-bridge.js");
   const netflixBridge = read("netflix-page-bridge.js");
+  const disneyBridge = read("disney-page-bridge.js");
   assert.doesNotMatch(bridge, /chrome[.](storage|runtime|tabs)/);
   assert.doesNotMatch(netflixBridge, /chrome[.](storage|runtime|tabs)/);
+  assert.doesNotMatch(disneyBridge, /chrome[.](storage|runtime|tabs)/);
   assert.match(bridge, /XMLHttpRequest/);
   assert.match(bridge, /PerformanceObserver/);
   assert.match(bridge, /globalThis[.]fetch/);
@@ -48,6 +51,8 @@ test("the page bridge has no extension API access and the content entry point on
   assert.match(netflixBridge, /showAllSubDubTracks/);
   assert.match(netflixBridge, /ttDownloadables/);
   assert.match(netflixBridge, /CONTENT_REQUEST_EVENT/);
+  assert.match(disneyBridge, /stream[?][.]sources/);
+  assert.match(disneyBridge, /CONTENT_REQUEST_EVENT/);
   assert.match(read("content.js"), /SubtleRuntime[.]start/);
   assert.ok(read("content.js").split("\n").length < 10);
   assert.match(read("popup.js"), /SubtlePopup[.]start/);
@@ -198,7 +203,8 @@ test("BBC styling keeps site-provided speaker colours on caption leaves", () => 
   assert.match(styles, /CAPTION_LEAF/);
   assert.match(styles, /background: var\(--subtle-caption-background\)/);
   assert.match(styles, /font-family: var\(--subtle-font-family\)/);
-  assert.doesNotMatch(styles, /(?:^|\s)color:/);
+  const bbcStyles = styles.slice(styles.indexOf("function bbcStylesheet"), styles.indexOf("function disneyStylesheet"));
+  assert.doesNotMatch(bbcStyles, /(?:^|\s)color:/);
   assert.match(popup, /id="bbc-colour-note"[^>]*hidden/);
   assert.match(controller, /activePlatform[?][.]id === "bbc"/);
   assert.match(controller, /primaryColourField[.]hidden = preservesNativeColour/);

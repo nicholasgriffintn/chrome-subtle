@@ -1,6 +1,6 @@
 # Subtle
 
-Subtle makes captions easier to read on YouTube, Netflix and BBC iPlayer. It styles each site's native captions and can add a synchronised second line from platform captions or a local SRT/VTT file.
+Subtle makes captions easier to read on YouTube, Netflix, BBC iPlayer and Disney+. It styles each site's native captions and can add a synchronised second line from platform captions or a local SRT/VTT file.
 
 ![Subtle marquee Promo](/promos/marquee-1400x560.png)
 
@@ -12,8 +12,9 @@ Subtle makes captions easier to read on YouTube, Netflix and BBC iPlayer. It sty
 - Optimise YouTube Shorts with an inherited style, smaller text scale, safe reading width and a separate vertical offset.
 - Add a second caption language on YouTube when the video supplies that track.
 - Add a second language supplied with the current Netflix title.
+- Style Disney+ captions inside its player and add a second language supplied by the title's HLS caption tracks.
 - Preserve BBC iPlayer's programme and speaker colours while changing typography, edges and caption surfaces.
-- Add a local SRT or VTT second line on YouTube, Netflix or BBC iPlayer.
+- Add a local SRT or VTT second line on YouTube, Netflix, BBC iPlayer or Disney+.
 - Keep the second line attached to the complete native caption group as Netflix moves dialogue around the frame.
 - Shift imported captions forwards or backwards to correct timing.
 - Filter sound descriptions, music cues, speaker labels and custom literal words or phrases when requested.
@@ -28,13 +29,13 @@ Subtle makes captions easier to read on YouTube, Netflix and BBC iPlayer. It sty
 3. Open `chrome://extensions` in Chrome.
 4. Enable **Developer mode** and select **Load unpacked**.
 5. Choose the extracted extension directory.
-6. Open YouTube, Netflix or BBC iPlayer, then open Subtle and select **Enable Subtle on…**. Chrome grants only that service and reloads the tab once.
+6. Open YouTube, Netflix, BBC iPlayer or Disney+, then open Subtle and select **Enable Subtle on…**. Chrome grants only that service and reloads the tab once.
 
 The companion site is in `website/`. Its download is a development preview; the extension has not yet been published to the Chrome Web Store.
 
 ## Privacy
 
-Subtle processes the current playback time, native caption elements and the caption metadata already supplied to supported video pages. On YouTube, it reuses the player's caption request to ask YouTube for the selected translated track. On Netflix, it requests the selected title track from a Netflix-provided CDN URL inside the active tab. BBC iPlayer support reads only the rendered caption DOM and does not use a page bridge. Netflix track URLs and caption text are not written to extension storage.
+Subtle processes the current playback time, native caption elements and the caption metadata already supplied to supported video pages. On YouTube, it reuses the player's caption request to ask YouTube for the selected translated track. On Netflix, it requests the selected title track from a Netflix-provided CDN URL inside the active tab. On Disney+, it reads the title's HLS subtitle manifest and assembles the selected WebVTT segments inside the active tab. BBC iPlayer support reads only the rendered caption DOM and does not use a page bridge. Platform track URLs and caption text are not written to extension storage.
 
 When the popup opens on a supported page, it may capture one low-quality image of the visible tab for the local style preview. The image remains in popup memory only and is discarded when the popup closes; it is never stored or transmitted by Subtle.
 
@@ -47,8 +48,9 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 - Picture in Picture mode does not display subtitles. This is a limitation of the browser's implementation.
 - YouTube second-language availability depends on the caption tracks supplied with each video.
 - Netflix second-language availability depends on the tracks packaged with each title; Subtle does not machine-translate Netflix captions.
+- Disney+ second-language availability depends on the HLS WebVTT tracks packaged with each title; forced-only and image-based tracks are not used.
 - BBC iPlayer currently supports its native caption track and a local SRT/VTT second line; it does not expose a platform second-language selector in Subtle.
-- YouTube's timed-text request and Netflix's player manifest are private interfaces and can change without notice.
+- YouTube's timed-text request and the Netflix and Disney+ player manifests are private interfaces and can change without notice.
 - Netflix DFXP and IMSC tracks retain timing and text but not every authored position or typographic treatment.
 - Netflix ad transitions can temporarily interrupt the second line while the title player changes state.
 - Imported files must be smaller than 2 MB and contain valid timed cues.
@@ -57,11 +59,11 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 
 ## Development
 
-The Manifest V3 extension has no runtime dependencies or build step. Runtime consumes one deep caption-provider interface with internal YouTube, Netflix and BBC iPlayer implementations. Shared SRT, WebVTT, TTML, DFXP and IMSC parsing lives in the cue module, while provider-specific identity, discovery, selection and loading stay behind the provider seam. Page bridges remain separate—and optional—because only services with private caption APIs need them.
+The Manifest V3 extension has no runtime dependencies or build step. Runtime consumes one deep caption-provider interface with internal YouTube, Netflix, BBC iPlayer and Disney+ implementations. Shared SRT, WebVTT, TTML, DFXP and IMSC parsing lives in the cue module, while provider-specific identity, discovery, selection and loading stay behind the provider seam. Page bridges remain separate—and optional—because only services with private caption APIs need them.
 
 Supported-site configuration is centralised in `lib/site-access.js`. The service worker dynamically registers the correct main-world bridge and isolated runtime only for origin groups the user has granted, making another service a registry and provider addition rather than a manifest-wide edit.
 
-The YouTube page bridge passively captures the player's proof-bearing timed-text request because tokenless URLs from player metadata return empty responses. The Netflix page bridge requests all title tracks, captures bounded track metadata from the player manifest and fetches a selected track by opaque identifier. Download URLs never cross into settings or storage. Netflix player matching separately scores connected video elements and excludes billboard and preview playback before deriving an overlay host. The renderer measures the union of active native caption boxes and follows it without overriding Netflix's authored placement.
+The YouTube page bridge passively captures the player's proof-bearing timed-text request because tokenless URLs from player metadata return empty responses. The Netflix page bridge requests all title tracks and captures bounded track metadata from the player manifest. The Disney+ bridge captures the master HLS manifest, keeps playlist URLs private, and assembles a selected segmented WebVTT track onto the title timeline. Track URLs never cross into settings or storage. Player adapters traverse open BBC and Disney+ shadow roots while the renderer follows the union of visible native caption boxes.
 
 The proof-token approach was informed by the MIT-licensed [yt-dual-subs](https://github.com/gythiro/yt-dual-subs) implementation. Subtle uses its own smaller bridge and keeps parsing and rendering in isolated extension modules.
 

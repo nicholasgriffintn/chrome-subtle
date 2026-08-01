@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "test": "pnpm run build && node --test tests/*.test.mjs",
     "check": "pnpm test && WRANGLER_WRITE_LOGS=false wrangler deploy --dry-run",
-    "deploy": "pnpm run check && wrangler deploy",
+    "deploy": "pnpm run check && pnpm run build && wrangler deploy",
     "dev": "vite"
   },
   "dependencies": {
