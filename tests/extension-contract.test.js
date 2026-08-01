@@ -21,11 +21,14 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(isolated.js.includes("lib/runtime-context.js"));
   assert.ok(isolated.js.indexOf("lib/cues.js") < isolated.js.indexOf("lib/native-caption-filters.js"));
   assert.ok(isolated.js.indexOf("lib/native-caption-filters.js") < isolated.js.indexOf("lib/runtime.js"));
+  assert.ok(isolated.js.indexOf("lib/native-caption-styles.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/runtime-context.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/platform-captions.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/runtime.js") < isolated.js.indexOf("content.js"));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("youtube-page-bridge.js") && script.matches.some((match) => match.includes("youtube"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("netflix-page-bridge.js") && script.matches.some((match) => match.includes("netflix"))));
+  assert.equal(mainWorldScripts.some((script) => script.matches.some((match) => match.includes("bbc.co.uk"))), false);
+  assert.ok(registrations.some((script) => script.world === "ISOLATED" && script.matches.some((match) => match.includes("bbc.co.uk"))));
   assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
   assert.match(read("service-worker.js"), /unregisterContentScripts/);
 });
@@ -148,6 +151,10 @@ test("dual captions follow native captions without displacing site containers", 
   assert.match(runtime, /--subtle-offset/);
   assert.doesNotMatch(runtime, /--subtle-primary-offset/);
   assert.match(css, /box-shadow: 0 0 0 var\(--subtle-window-padding\) var\(--subtle-window-background\)/);
+  assert.match(css, /line-height: var\(--subtle-native-line-height\)/);
+  assert.match(css, /padding: 0 var\(--subtle-window-padding\)/);
+  assert.match(runtime, /--subtle-native-line-height/);
+  assert.match(runtime, /SubtleOverlay[.]nativeCaptionLineHeight/);
   assert.doesNotMatch(css, /caption-window[^\{]*\{\s*background: var\(--subtle-window-background\)/);
   assert.match(runtime, /SubtleRuntimeContext[.]hasContext/);
   assert.match(runtime, /effectiveSecondarySource\(state, adapter[.]id\)/);
@@ -181,6 +188,20 @@ test("Netflix styling targets only the innermost caption span", () => {
   assert.match(css, /\[data-uia="timed-text-container"\] span:not\(:has\(\*\)\)/);
   assert.doesNotMatch(css, /[.]player-timedtext-text-container span,/);
   assert.doesNotMatch(css, /\[data-uia="timed-text-container"\] span\s*\{/);
+});
+
+test("BBC styling keeps site-provided speaker colours on caption leaves", () => {
+  const styles = read("lib/native-caption-styles.js");
+  const popup = read("popup.html");
+  const controller = read("lib/popup-controller.js");
+
+  assert.match(styles, /CAPTION_LEAF/);
+  assert.match(styles, /background: var\(--subtle-caption-background\)/);
+  assert.match(styles, /font-family: var\(--subtle-font-family\)/);
+  assert.doesNotMatch(styles, /(?:^|\s)color:/);
+  assert.match(popup, /id="bbc-colour-note"[^>]*hidden/);
+  assert.match(controller, /activePlatform[?][.]id === "bbc"/);
+  assert.match(controller, /primaryColourField[.]hidden = preservesNativeColour/);
 });
 
 function read(relativePath) {

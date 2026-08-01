@@ -5,6 +5,7 @@ const SubtitleAdapters = require("../lib/adapters.js");
 test("supported hostnames map to explicit site adapters", () => {
   assert.equal(SubtitleAdapters.forHostname("www.youtube.com").id, "youtube");
   assert.equal(SubtitleAdapters.forHostname("www.netflix.com").id, "netflix");
+  assert.equal(SubtitleAdapters.forHostname("www.bbc.co.uk").id, "bbc");
   assert.equal(SubtitleAdapters.forHostname("evil-youtube.com"), null);
 });
 
@@ -73,6 +74,25 @@ test("Netflix does not attach to disconnected or ended videos", () => {
     SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.netflix, { querySelectorAll: () => [disconnected, ended] }),
     null
   );
+});
+
+test("BBC iPlayer matches its playback video and shared caption host", () => {
+  const captionLayer = captionCandidate("My business and my raised religion were at odds.", {
+    left: 0, top: 0, right: 976, bottom: 549, width: 976, height: 549
+  });
+  const player = { contains: (candidate) => candidate === captionLayer };
+  const video = videoCandidate({ paused: false, area: 976 * 549, parent: player });
+  video.getBoundingClientRect = captionLayer.getBoundingClientRect;
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === "video") return [video];
+      if (selector === "div[aria-live='polite']") return [captionLayer];
+      return [];
+    }
+  };
+
+  assert.equal(SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.bbc, root), video);
+  assert.equal(SubtitleAdapters.findPlayer(SubtitleAdapters.ADAPTERS.bbc, root, { video }), player);
 });
 
 test("video mutations trigger rematching while unrelated subtitle mutations do not", () => {
@@ -232,6 +252,53 @@ test("native caption filtering targets Netflix leaf spans instead of styled cont
     SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.netflix, root),
     [leaf]
   );
+});
+
+test("BBC caption discovery and filtering target the supplied rendered caption leaves", () => {
+  const paragraph = captionCandidate("My business and my raised religion were at odds.");
+  const firstLine = captionCandidate("My business and my");
+  const secondLine = captionCandidate("raised religion were at odds.");
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === "div[aria-live='polite'] [lang] p") return [paragraph];
+      if (selector === "div[aria-live='polite'] [lang] p > span > span:not(:has(*))") {
+        return [firstLine, secondLine];
+      }
+      return [];
+    }
+  };
+
+  assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.bbc, root), paragraph);
+  assert.deepEqual(
+    SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.bbc, root),
+    [firstLine, secondLine]
+  );
+});
+
+test("BBC discovery traverses the open Toucan player shadow root", () => {
+  const paragraph = captionCandidate("Caption inside shadow DOM");
+  const leaf = captionCandidate("Caption inside shadow DOM");
+  const video = videoCandidate({ paused: false });
+  const shadowRoot = {
+    querySelectorAll(selector) {
+      if (selector === "smp-toucan-player") return [];
+      if (selector === "video") return [video];
+      if (selector === "div[aria-live='polite'] [lang] p") return [paragraph];
+      if (selector === "div[aria-live='polite'] [lang] p > span > span:not(:has(*))") return [leaf];
+      return [];
+    }
+  };
+  const playerHost = { shadowRoot };
+  const root = {
+    querySelectorAll(selector) {
+      return selector === "smp-toucan-player" ? [playerHost] : [];
+    }
+  };
+
+  assert.deepEqual(SubtitleAdapters.captionRoots(SubtitleAdapters.ADAPTERS.bbc, root), [root, shadowRoot]);
+  assert.equal(SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.bbc, root), video);
+  assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.bbc, root), paragraph);
+  assert.deepEqual(SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.bbc, root), [leaf]);
 });
 
 test("filtered native captions remain discoverable so filters can be removed", () => {

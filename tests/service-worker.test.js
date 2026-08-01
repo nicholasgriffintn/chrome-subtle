@@ -45,7 +45,11 @@ test("registration sync keeps granted scripts current and removes revoked platfo
   vm.runInNewContext(source, context);
   await settlePromises();
 
-  assert.deepEqual(removals.sort(), SiteAccess.registrationIds(SiteAccess.forId("netflix")).sort());
+  const ungrantedIds = SiteAccess.all()
+    .filter((platform) => platform.id !== "youtube")
+    .flatMap(SiteAccess.registrationIds)
+    .sort();
+  assert.deepEqual(removals.sort(), ungrantedIds);
   assert.deepEqual(updates.map((script) => script.id).sort(), SiteAccess.registrationIds(SiteAccess.forId("youtube")).sort());
   assert.deepEqual(additions, []);
 

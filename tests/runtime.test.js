@@ -48,10 +48,23 @@ test("the playback loop limits cue work and fallback layout reads", async () => 
   assert.ok(harness.layoutMeasurements() - initialMeasurements <= 4);
 });
 
+test("the runtime observes and styles discovered player shadow roots", async () => {
+  const shadowRoot = {};
+  const harness = createHarness({ shadowRoot });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+
+  assert.ok(harness.observedTargets.includes(shadowRoot));
+  assert.ok(harness.styledRootGroups.some((roots) => roots.includes(shadowRoot)));
+});
+
 function createHarness(options = {}) {
   const listeners = new Map();
   const timers = [];
   const animationFrames = [];
+  const observedTargets = [];
+  const styledRootGroups = [];
   let videoMutationChecks = 0;
   let layoutMeasurements = 0;
   let overlayRenders = 0;
@@ -78,7 +91,7 @@ function createHarness(options = {}) {
   const observer = { callback: null };
   class FakeMutationObserver {
     constructor(callback) { observer.callback = callback; }
-    observe() {}
+    observe(target) { observedTargets.push(target); }
     disconnect() {}
   }
   class FakeResizeObserver {
@@ -109,6 +122,10 @@ function createHarness(options = {}) {
     SubtleState,
     SubtleCues,
     SubtleNativeCaptionFilters: { create: () => ({ apply() {}, clear() {} }) },
+    SubtleNativeCaptionStyles: {
+      apply(_platformId, roots) { styledRootGroups.push(roots); },
+      clear() {}
+    },
     SubtitleAdapters: {
       forHostname: () => ({ id: "youtube", label: "YouTube" }),
       findVideo: () => video,
@@ -120,6 +137,7 @@ function createHarness(options = {}) {
         layoutMeasurements += 1;
         return { rect: { left: 10, top: 10, right: 100, bottom: 40, width: 90, height: 30 }, alignment: "center" };
       },
+      captionRoots: () => [document, ...(options.shadowRoot ? [options.shadowRoot] : [])],
       hasNativeCaptions: () => false
     },
     SubtlePlatformCaptions: {
@@ -172,6 +190,8 @@ function createHarness(options = {}) {
     player,
     video,
     timers,
+    observedTargets,
+    styledRootGroups,
     videoMutationChecks: () => videoMutationChecks,
     layoutMeasurements: () => layoutMeasurements,
     overlayRenders: () => overlayRenders,

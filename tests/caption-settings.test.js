@@ -56,6 +56,16 @@ test("unsupported pages expose only the local file source", () => {
   assert.equal(view.showUpload, true);
 });
 
+test("BBC iPlayer keeps its native speaker colours and offers a local second line", () => {
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null, "bbc");
+
+  assert.equal(view.secondarySource, "upload");
+  assert.equal(view.platformSourceLabel, "BBC iPlayer captions");
+  assert.equal(view.platformSourceDisabled, true);
+  assert.equal(view.showUpload, true);
+  assert.match(view.note, /speaker colours/i);
+});
+
 test("a known supported page keeps its platform source while runtime status is unavailable", () => {
   const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null, "youtube");
 

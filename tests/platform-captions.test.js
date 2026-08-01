@@ -5,8 +5,9 @@ const PlatformCaptions = require("../lib/platform-captions.js");
 test("supported sites expose caption providers through one stable interface", () => {
   const youtube = PlatformCaptions.forPlatform("youtube");
   const netflix = PlatformCaptions.forPlatform("netflix");
+  const bbc = PlatformCaptions.forPlatform("bbc");
 
-  for (const provider of [youtube, netflix]) {
+  for (const provider of [youtube, netflix, bbc]) {
     assert.equal(typeof provider.contentKey, "function");
     assert.equal(typeof provider.tracksFromEvent, "function");
     assert.equal(typeof provider.selectTrack, "function");
@@ -14,6 +15,7 @@ test("supported sites expose caption providers through one stable interface", ()
     assert.equal(typeof provider.availableLanguages, "function");
   }
   assert.equal(PlatformCaptions.forPlatform("unsupported"), null);
+  assert.equal(bbc.contentKey({ pathname: "/iplayer/episode/p0gd2b0j/example" }), "p0gd2b0j");
 });
 
 test("provider events are accepted only for the current title", () => {
@@ -42,6 +44,14 @@ test("track requests use the provider's page-bridge event", () => {
     (type) => ({ type })
   );
   assert.deepEqual(dispatched, { type: "subtle:request-netflix-tracks" });
+
+  dispatched = undefined;
+  PlatformCaptions.requestTracks(
+    PlatformCaptions.forPlatform("bbc"),
+    { dispatchEvent(event) { dispatched = event; } },
+    (type) => ({ type })
+  );
+  assert.equal(dispatched, undefined);
 });
 
 test("YouTube exposes only languages from the player's current caption menu", () => {

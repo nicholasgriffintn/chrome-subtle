@@ -3,7 +3,7 @@
   "name": "Subtle — Better subtitles",
   "short_name": "Subtle",
   "version": "0.2.0",
-  "description": "Readable, customisable and dual subtitles for YouTube and Netflix.",
+  "description": "Readable, customisable subtitles for YouTube, Netflix and BBC iPlayer.",
   "minimum_chrome_version": "120",
   "permissions": [
     "storage",
@@ -13,7 +13,8 @@
   "optional_host_permissions": [
     "https://www.youtube.com/*",
     "https://www.youtube-nocookie.com/*",
-    "https://www.netflix.com/*"
+    "https://www.netflix.com/*",
+    "https://www.bbc.co.uk/*"
   ],
   "background": {
     "service_worker": "service-worker.js"
