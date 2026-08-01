@@ -118,6 +118,46 @@ test("authored caption lines retain separate foreground backgrounds", () => {
   }
 });
 
+test("the second track keeps its configured scale and colour while sharing caption surfaces", () => {
+  const originalDocument = global.document;
+  global.document = { createElement: createFakeElement };
+  try {
+    const player = createFakeElement();
+    player.querySelector = () => null;
+    const host = SubtleOverlay.create(player);
+    const state = {
+      ...SubtleState.createDefaultState(),
+      fontSize: 38,
+      textColor: "#fefefe",
+      secondaryScale: 55,
+      secondaryColor: "#ff0000"
+    };
+
+    SubtleOverlay.render(host, { text: "Matching caption" }, state);
+
+    assert.equal(host.style.properties.get("--subtle-overlay-size"), "21px");
+    assert.equal(host.style.properties.get("--subtle-overlay-colour"), "rgba(255, 0, 0, 1)");
+    assert.equal(host.style.properties.get("--subtle-overlay-background"), "rgba(11, 16, 19, 0.76)");
+    assert.equal(host.style.properties.get("--subtle-overlay-window"), "rgba(0, 0, 0, 0)");
+    assert.equal(host.style.properties.get("--subtle-overlay-stroke"), "3px rgba(0, 0, 0, 0.94)");
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
+test("the native caption gap clears styled multi-line caption overflow", () => {
+  const gap = SubtleOverlay.captionGap(34);
+  const placement = SubtleOverlay.calculateAnchoredPlacement(
+    { left: 0, top: 0, right: 1000, bottom: 600, width: 1000, height: 600 },
+    { left: 100, top: 60, right: 900, bottom: 230, width: 800, height: 170 },
+    { width: 700, height: 100 },
+    gap
+  );
+
+  assert.ok(gap >= 9);
+  assert.equal(placement.top, 230 + gap);
+});
+
 function createFakeElement() {
   let textContent = "";
   const element = {
@@ -127,8 +167,9 @@ function createFakeElement() {
     replaceWrites: 0,
     style: {
       writes: 0,
-      setProperty() { this.writes += 1; },
-      removeProperty() { this.writes += 1; }
+      properties: new Map(),
+      setProperty(name, value) { this.properties.set(name, value); this.writes += 1; },
+      removeProperty(name) { this.properties.delete(name); this.writes += 1; }
     },
     setAttribute() {},
     attachShadow() { return createFakeElement(); },
