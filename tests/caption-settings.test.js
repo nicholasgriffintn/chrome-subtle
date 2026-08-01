@@ -3,17 +3,16 @@ const assert = require("node:assert/strict");
 const CaptionSettings = require("../lib/caption-settings.js");
 const SubtleState = require("../lib/state.js");
 
-const youtubeLanguages = [
-  { value: "en", label: "English" },
-  { value: "es", label: "Spanish" }
-];
-
 test("YouTube settings describe translation while Netflix settings list title tracks", () => {
   const state = SubtleState.normaliseState({ secondarySource: "platform", targetLanguage: "es" });
   const youtube = CaptionSettings.sourceView(state, {
     platformId: "youtube",
-    sourceLabel: "YouTube translation"
-  }, youtubeLanguages);
+    sourceLabel: "YouTube translation",
+    availableTracks: [
+      { languageCode: "en", label: "English" },
+      { languageCode: "es", label: "Spanish" }
+    ]
+  });
   const netflix = CaptionSettings.sourceView(state, {
     platformId: "netflix",
     sourceLabel: "Netflix captions",
@@ -23,11 +22,14 @@ test("YouTube settings describe translation while Netflix settings list title tr
       { languageCode: "es", label: "Español" }
     ],
     selectedTrack: { languageCode: "es" }
-  }, youtubeLanguages);
+  });
 
   assert.equal(youtube.languageLabel, "Translate to");
   assert.equal(youtube.platformSourceLabel, "YouTube translation");
-  assert.deepEqual(youtube.languageOptions, youtubeLanguages);
+  assert.deepEqual(youtube.languageOptions, [
+    { value: "en", label: "English" },
+    { value: "es", label: "Spanish" }
+  ]);
   assert.equal(netflix.languageLabel, "Second language");
   assert.equal(netflix.platformSourceLabel, "Netflix captions");
   assert.equal(netflix.selectedLanguage, "es");
@@ -39,7 +41,7 @@ test("Netflix settings wait honestly until title tracks are captured", () => {
     platformId: "netflix",
     sourceLabel: "Netflix captions",
     availableTracks: []
-  }, youtubeLanguages);
+  });
 
   assert.equal(view.languageDisabled, true);
   assert.equal(view.languageOptions[0].label, "Waiting for Netflix captions…");
@@ -47,9 +49,19 @@ test("Netflix settings wait honestly until title tracks are captured", () => {
 });
 
 test("unsupported pages expose only the local file source", () => {
-  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null, youtubeLanguages);
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null);
 
   assert.equal(view.secondarySource, "upload");
   assert.equal(view.platformSourceDisabled, true);
   assert.equal(view.showUpload, true);
+});
+
+test("YouTube translation stays disabled until the current player supplies languages", () => {
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), {
+    platformId: "youtube",
+    availableTracks: []
+  });
+
+  assert.equal(view.languageDisabled, true);
+  assert.equal(view.languageOptions[0].value, "");
 });

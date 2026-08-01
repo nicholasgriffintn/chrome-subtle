@@ -32,7 +32,8 @@ test("the page bridge has no extension API access and the content entry point on
   assert.match(bridge, /globalThis[.]fetch/);
   assert.match(bridge, /[/]api[/]timedtext/);
   assert.match(bridge, /subtle_client/);
-  assert.doesNotMatch(bridge, /getPlayerResponse|ytInitialPlayerResponse/);
+  assert.match(bridge, /getOption[?][.]\("captions", "tracklist"\)/);
+  assert.doesNotMatch(bridge, /ytInitialPlayerResponse/);
   assert.match(netflixBridge, /showAllSubDubTracks/);
   assert.match(netflixBridge, /ttDownloadables/);
   assert.match(netflixBridge, /CONTENT_REQUEST_EVENT/);

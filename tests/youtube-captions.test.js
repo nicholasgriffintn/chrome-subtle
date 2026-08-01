@@ -2,29 +2,20 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const YouTubeCaptions = require("../lib/youtube-captions.js");
 
-test("caption URLs preserve proof tokens and mark extension fetches", () => {
-  const url = YouTubeCaptions.buildTrackUrl({ baseUrl: "https://www.youtube.com/api/timedtext?v=abc&pot=proof", languageCode: "es" }, "en");
-  const parsed = new URL(url);
-
-  assert.equal(parsed.searchParams.get("fmt"), "json3");
-  assert.equal(parsed.searchParams.get("tlang"), "en");
-  assert.equal(parsed.searchParams.get("pot"), "proof");
-  assert.equal(parsed.searchParams.get("subtle_client"), "1");
-  assert.equal(YouTubeCaptions.buildTrackUrl({ baseUrl: "https://attacker.example/captions", languageCode: "es" }, "en"), null);
-  assert.equal(YouTubeCaptions.buildTrackUrl({ baseUrl: "https://www.youtube.com/watch?v=abc&pot=proof", languageCode: "es" }, "en"), null);
-  assert.equal(YouTubeCaptions.buildTrackUrl({ baseUrl: "https://www.youtube.com/api/timedtext?v=abc", languageCode: "es" }, "en"), null);
-});
-
-test("page-provided tracks are bounded and constrained before use", () => {
-  const valid = { baseUrl: "https://www.youtube.com/api/timedtext?v=abc&lang=es&pot=proof", languageCode: "es" };
-  const oversized = Array.from({ length: 40 }, () => valid);
-  const tracks = YouTubeCaptions.normaliseTracks([
-    { baseUrl: "https://www.youtube.com/watch?v=abc&pot=proof", languageCode: "en" },
-    ...oversized
+test("page-provided tracks and player-menu languages are bounded before use", () => {
+  const track = { baseUrl: "https://www.youtube.com/api/timedtext?v=abc&lang=es&pot=proof", languageCode: "es" };
+  const tracks = YouTubeCaptions.normaliseTracks(Array.from({ length: 40 }, () => track), [
+    { languageCode: "en", label: "English" },
+    { languageCode: "zh-Hans", label: "Chinese (Simplified)" },
+    { languageCode: "ZH-HANS", label: "duplicate" }
   ]);
 
-  assert.equal(tracks.length, 15);
-  assert.equal(tracks[0].languageCode, "es");
+  assert.equal(tracks.length, 16);
+  assert.deepEqual(tracks[0].availableLanguages, [
+    { languageCode: "en", label: "English" },
+    { languageCode: "zh-Hans", label: "Chinese (Simplified)" }
+  ]);
+  assert.equal(YouTubeCaptions.selectLanguage(tracks[0].availableLanguages, "zh-hans").languageCode, "zh-Hans");
 });
 
 test("track selection favours the browser language, then human captions", () => {
@@ -33,30 +24,49 @@ test("track selection favours the browser language, then human captions", () => 
     { languageCode: "es", kind: "standard" },
     { languageCode: "de", kind: "standard" }
   ];
-  assert.equal(YouTubeCaptions.selectTrack(tracks, "de"), tracks[2]);
   assert.equal(YouTubeCaptions.selectTrack(tracks, "de-DE"), tracks[2]);
   assert.equal(YouTubeCaptions.selectTrack(tracks, "it"), tracks[1]);
 });
 
-test("an empty successful YouTube caption response degrades to no cues", async () => {
-  const track = { baseUrl: "https://www.youtube.com/api/timedtext?v=abc&pot=proof", languageCode: "es" };
-  const cues = await YouTubeCaptions.loadTrack(track, "en", async () => ({
-    ok: true,
-    status: 200,
-    text: async () => ""
-  }));
+test("YouTube caption content is requested through the page bridge", async () => {
+  const harness = contentHarness({ text: '{"events":[]}' });
+  const cues = await YouTubeCaptions.loadTrack(youtubeTrack(), "en", harness.document, {
+    createEvent: harness.createEvent
+  });
 
   assert.deepEqual(cues, []);
+  assert.equal(harness.request.targetLanguage, "en");
 });
 
-test("an unreadable YouTube caption response produces a useful error", async () => {
-  const track = { baseUrl: "https://www.youtube.com/api/timedtext?v=abc&pot=proof", languageCode: "es" };
+test("a YouTube 429 remains identifiable for request deduplication", async () => {
+  const harness = contentHarness({ status: 429, error: "YouTube is rate-limiting caption translation." });
   await assert.rejects(
-    YouTubeCaptions.loadTrack(track, "en", async () => ({
-      ok: true,
-      status: 200,
-      text: async () => "not-json"
-    })),
-    /unreadable caption response/
+    YouTubeCaptions.loadTrack(youtubeTrack(), "en", harness.document, { createEvent: harness.createEvent }),
+    (error) => error.status === 429
   );
 });
+
+function youtubeTrack() {
+  return {
+    baseUrl: "https://www.youtube.com/api/timedtext?v=abc&lang=es&pot=proof",
+    languageCode: "es",
+    availableLanguages: [{ languageCode: "en", label: "English" }]
+  };
+}
+
+function contentHarness(response) {
+  const listeners = new Map();
+  const harness = { request: null, createEvent: (type, detail) => ({ type, detail }) };
+  harness.document = {
+    addEventListener(type, listener) { listeners.set(type, listener); },
+    removeEventListener(type) { listeners.delete(type); },
+    dispatchEvent(event) {
+      if (event.type !== "subtle:request-youtube-track-content") return;
+      harness.request = event.detail;
+      queueMicrotask(() => listeners.get("subtle:youtube-track-content")?.({
+        detail: { requestId: event.detail.requestId, ...response }
+      }));
+    }
+  };
+  return harness;
+}

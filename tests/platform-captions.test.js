@@ -43,3 +43,23 @@ test("track requests use the provider's page-bridge event", () => {
   );
   assert.deepEqual(dispatched, { type: "subtle:request-netflix-tracks" });
 });
+
+test("YouTube exposes only languages from the player's current caption menu", () => {
+  const provider = PlatformCaptions.forPlatform("youtube");
+  const tracks = provider.tracksFromEvent({
+    videoId: "current",
+    tracks: [{
+      baseUrl: "https://www.youtube.com/api/timedtext?v=current&lang=en&pot=proof",
+      languageCode: "en"
+    }],
+    availableLanguages: [
+      { languageCode: "en", label: "English" },
+      { languageCode: "fr", label: "Français" }
+    ]
+  }, { href: "https://www.youtube.com/watch?v=current" });
+
+  assert.deepEqual(provider.availableLanguages(tracks), [
+    { languageCode: "en", label: "English" },
+    { languageCode: "fr", label: "Français" }
+  ]);
+});
