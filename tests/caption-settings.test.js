@@ -66,6 +66,19 @@ test("YouTube captions stay disabled until the current player supplies languages
   assert.equal(view.languageOptions[0].value, "");
 });
 
+test("platform-specific controls do not expose YouTube placement on Netflix", () => {
+  assert.deepEqual(CaptionSettings.platformView({ id: "netflix" }, { surface: "video" }), {
+    showYouTubePosition: false,
+    showShortsSettings: false,
+    shortsStatus: "YouTube only"
+  });
+  assert.deepEqual(CaptionSettings.platformView({ id: "youtube" }, { surface: "shorts" }), {
+    showYouTubePosition: true,
+    showShortsSettings: true,
+    shortsStatus: "Active now"
+  });
+});
+
 test("an imported file is parsed once while unrelated preferences change", () => {
   const cuesPath = require.resolve("../lib/cues.js");
   const settingsPath = require.resolve("../lib/caption-settings.js");

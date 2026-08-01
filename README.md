@@ -4,9 +4,10 @@ Subtle makes captions easier to read on YouTube and Netflix. It styles each site
 
 ## What it does
 
-- Restyle native captions with nine presets, seven local font families, independent surface and edge controls, alignment, spacing, blur, size and manual height controls.
+- Restyle native captions with nine presets, 18 local font choices, independent surface and edge controls, alignment, spacing, blur, size and manual height controls.
 - Wrap long YouTube captions into a centred, movie-like reading block or retain the site's original line width.
 - Keep YouTube's native draggable caption position by default; choose a manual top or bottom anchor only when you need an exact height.
+- Optimise YouTube Shorts with an inherited style, smaller text scale, safe reading width and a separate vertical offset.
 - Add a second caption language on YouTube when the video supplies that track.
 - Add a second language supplied with the current Netflix title.
 - Add a local SRT or VTT second line on YouTube or Netflix.
@@ -45,6 +46,7 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 - Netflix ad transitions can temporarily interrupt the second line while the title player changes state.
 - Imported files must be smaller than 2 MB and contain valid timed cues.
 - Creator-positioned or heavily styled captions may not preserve every original layout detail after styling.
+- Named font choices use local and site-provided fonts with system fallbacks; their exact appearance depends on fonts available on the device.
 
 ## Development
 

@@ -123,3 +123,26 @@ test("custom block-filter editing preserves spaces and new lines", () => {
     "sponsored by\n"
   );
 });
+
+test("Shorts geometry preferences are bounded independently of regular video style", () => {
+  const state = SubtleState.normaliseState({
+    shortsOptimised: false,
+    shortsScale: 200,
+    shortsWidth: 20,
+    shortsOffset: 90
+  });
+
+  assert.equal(state.shortsOptimised, false);
+  assert.equal(state.shortsScale, 110);
+  assert.equal(state.shortsWidth, 55);
+  assert.equal(state.shortsOffset, 40);
+});
+
+test("expanded local font choices survive normalisation", () => {
+  for (const fontFamily of [
+    "youtube_sans", "roboto", "open_sans", "montserrat", "lato", "arial", "typewriter",
+    "tajawal", "cairo", "almarai", "noto_kufi"
+  ]) {
+    assert.equal(SubtleState.normaliseState({ fontFamily }).fontFamily, fontFamily);
+  }
+});

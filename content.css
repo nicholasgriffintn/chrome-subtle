@@ -15,6 +15,7 @@
   --subtle-letter-spacing: 0.2px;
   --subtle-movie-width: 42ch;
   --subtle-offset: 12%;
+  --subtle-shorts-width: 78%;
 }
 
 :root[data-subtle-enabled] .ytp-caption-segment,
@@ -60,6 +61,13 @@
 :root[data-subtle-enabled][data-subtle-movie-like="true"] .caption-window .captions-text {
   width: max-content !important;
   max-width: min(var(--subtle-movie-width), calc(100vw - 32px)) !important;
+  margin-inline: auto !important;
+  white-space: normal !important;
+}
+
+:root[data-subtle-enabled][data-subtle-surface="shorts"][data-subtle-shorts-optimised="true"] .caption-window .captions-text {
+  width: max-content !important;
+  max-width: min(var(--subtle-movie-width), var(--subtle-shorts-width)) !important;
   margin-inline: auto !important;
   white-space: normal !important;
 }

@@ -95,13 +95,15 @@
 
           <section class="panel">
             <div class="panel-heading"><div><span class="eyebrow">Placement</span><h2>Shape the reading area</h2></div></div>
-            <label class="check-row">
-              <span><strong>Follow site position</strong><small>Keep YouTube's native draggable placement.</small></span>
-              <input id="follow-native-position" type="checkbox"><i aria-hidden="true"></i>
-            </label>
-            <div class="control-grid placement-controls">
-              <label class="field" for="position"><span>Anchor</span><select id="position"><option value="bottom">Bottom</option><option value="top">Top</option></select></label>
-              <label class="range-field compact-range" for="offset"><span>Height <output id="offset-output">12%</output></span><input id="offset" type="range" min="0" max="40" step="1"></label>
+            <div id="youtube-position-controls" class="platform-controls">
+              <label class="check-row">
+                <span><strong>Follow site position</strong><small>Keep YouTube's native draggable placement.</small></span>
+                <input id="follow-native-position" type="checkbox"><i aria-hidden="true"></i>
+              </label>
+              <div class="control-grid placement-controls">
+                <label class="field" for="position"><span>Anchor</span><select id="position"><option value="bottom">Bottom</option><option value="top">Top</option></select></label>
+                <label class="range-field compact-range" for="offset"><span>Height <output id="offset-output">12%</output></span><input id="offset" type="range" min="0" max="40" step="1"></label>
+              </div>
             </div>
             <label class="check-row">
               <span><strong>Movie-like subtitles</strong><small>Wrap long captions into a centred reading block.</small></span>
@@ -113,6 +115,20 @@
               <input id="readability-mode" type="checkbox"><i aria-hidden="true"></i>
             </label>
           </section>
+
+          <section id="shorts-settings" class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">YouTube Shorts</span><h2>Tune the vertical frame</h2></div>
+              <span id="shorts-status" class="count">Available on Shorts</span>
+            </div>
+            <label class="check-row">
+              <span><strong>Optimise for Shorts</strong><small>Inherit your style with safer vertical-video geometry.</small></span>
+              <input id="shorts-optimised" type="checkbox"><i aria-hidden="true"></i>
+            </label>
+            <label class="range-field" for="shorts-scale"><span>Text scale <output id="shorts-scale-output">82%</output></span><input id="shorts-scale" type="range" min="60" max="110" step="1"></label>
+            <label class="range-field" for="shorts-width"><span>Safe width <output id="shorts-width-output">78%</output></span><input id="shorts-width" type="range" min="55" max="92" step="1"></label>
+            <label class="range-field" for="shorts-offset"><span>Height <output id="shorts-offset-output">18%</output></span><input id="shorts-offset" type="range" min="0" max="40" step="1"></label>
+          </section>
         </section>
 
         <section id="panel-style" class="tab-panel" role="tabpanel" aria-labelledby="tab-style" hidden>
@@ -122,9 +138,21 @@
             <label class="range-field" for="secondary-scale"><span>Second-line scale <output id="secondary-scale-output">82%</output></span><input id="secondary-scale" type="range" min="55" max="110" step="1"></label>
             <div class="control-grid">
               <label class="field field-wide" for="font-family"><span>Typeface</span><select id="font-family">
-                <option value="monospaced_serif">Monospaced serif</option><option value="proportional_serif">Proportional serif</option>
-                <option value="monospaced_sans">Monospaced sans-serif</option><option value="proportional_sans">Proportional sans-serif</option>
-                <option value="casual">Casual</option><option value="cursive">Cursive</option><option value="small_caps">Small capitals</option>
+                <optgroup label="Caption standards">
+                  <option value="youtube_sans">YouTube default</option><option value="proportional_sans">Proportional sans-serif</option>
+                  <option value="monospaced_sans">Monospaced sans-serif</option><option value="proportional_serif">Proportional serif</option>
+                  <option value="monospaced_serif">Monospaced serif</option><option value="casual">Casual</option>
+                  <option value="cursive">Cursive</option><option value="small_caps">Small capitals</option>
+                </optgroup>
+                <optgroup label="Common local fonts">
+                  <option value="roboto">Roboto</option><option value="open_sans">Open Sans</option>
+                  <option value="montserrat">Montserrat</option><option value="lato">Lato</option>
+                  <option value="arial">Arial</option><option value="typewriter">Cinema typewriter</option>
+                </optgroup>
+                <optgroup label="Arabic-friendly local fonts">
+                  <option value="tajawal">Tajawal</option><option value="cairo">Cairo</option>
+                  <option value="almarai">Almarai</option><option value="noto_kufi">Noto Kufi Arabic</option>
+                </optgroup>
               </select></label>
               <label class="field" for="font-weight"><span>Weight</span><select id="font-weight"><option value="400">Regular</option><option value="500">Medium</option><option value="550">Book</option><option value="600">Semibold</option><option value="650">Strong</option><option value="700">Bold</option><option value="800">Heavy</option><option value="900">Black</option></select></label>
               <label class="field" for="text-align"><span>Alignment</span><select id="text-align"><option value="auto">From site</option><option value="left">Left</option><option value="center">Centre</option><option value="right">Right</option></select></label>

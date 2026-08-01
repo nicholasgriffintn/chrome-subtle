@@ -11,6 +11,17 @@ test("expanded font families resolve to local system stacks", () => {
   assert.match(SubtleOverlay.fontStack("casual"), /Chalkboard/);
   assert.match(SubtleOverlay.fontStack("cursive"), /Apple Chancery/);
   assert.equal(SubtleOverlay.fontVariant("small_caps"), "small-caps");
+  assert.match(SubtleOverlay.fontStack("youtube_sans"), /YouTube Noto/);
+  assert.match(SubtleOverlay.fontStack("roboto"), /Roboto/);
+  assert.match(SubtleOverlay.fontStack("open_sans"), /Open Sans/);
+  assert.match(SubtleOverlay.fontStack("montserrat"), /Montserrat/);
+  assert.match(SubtleOverlay.fontStack("lato"), /Lato/);
+  assert.match(SubtleOverlay.fontStack("arial"), /Arial/);
+  assert.match(SubtleOverlay.fontStack("typewriter"), /American Typewriter/);
+  assert.match(SubtleOverlay.fontStack("tajawal"), /Tajawal/);
+  assert.match(SubtleOverlay.fontStack("cairo"), /Cairo/);
+  assert.match(SubtleOverlay.fontStack("almarai"), /Almarai/);
+  assert.match(SubtleOverlay.fontStack("noto_kufi"), /Noto Kufi Arabic/);
 });
 
 test("edge styles produce distinct stroke and shadow treatments", () => {

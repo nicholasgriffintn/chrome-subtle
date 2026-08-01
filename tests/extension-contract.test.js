@@ -94,11 +94,27 @@ test("popup organises parity controls into accessible main, style and custom tab
   assert.match(popup, /role="tab"[^>]*>Style</);
   assert.match(popup, /role="tab"[^>]*>Custom</);
   assert.match(popup, /id="follow-native-position"/);
+  assert.match(popup, /id="youtube-position-controls"/);
+  assert.match(popup, /id="shorts-settings"/);
+  assert.match(popup, /id="shorts-scale"/);
+  assert.match(popup, /id="shorts-width"/);
+  assert.match(popup, /id="shorts-offset"/);
   assert.match(popup, /id="movie-like"/);
   assert.match(popup, /id="text-align"/);
   assert.match(popup, /id="readability-mode"/);
   assert.match(popup, /id="custom-blocked-terms"/);
   assert.equal(Object.keys(presets.all()).length, 9);
+  assert.equal((popup.match(/<h2>Set the voice<\/h2>/g) || []).length, 1);
+});
+
+test("font picker expands through local fallback stacks without remote font loading", () => {
+  const popup = read("popup.html");
+  const overlay = read("lib/overlay.js");
+
+  for (const value of ["youtube_sans", "roboto", "open_sans", "montserrat", "lato", "arial", "typewriter", "tajawal", "cairo", "almarai", "noto_kufi"]) {
+    assert.match(popup, new RegExp(`value="${value}"`));
+  }
+  assert.doesNotMatch(overlay, /fonts[.]googleapis[.]com|https?:\/\//);
 });
 
 test("live preview remains visible, clips safely and can use an active-tab snapshot", () => {
@@ -139,12 +155,17 @@ test("dual captions follow native captions without displacing site containers", 
   assert.match(css, /data-subtle-movie-like="true"/);
   assert.match(css, /--subtle-movie-width/);
   assert.match(runtime, /dataset[.]subtleFollowPosition/);
+  assert.match(runtime, /SubtleState[.]surfaceForPathname/);
+  assert.match(runtime, /SubtleState[.]effectiveSurfaceState/);
   assert.match(runtime, /nativeCaptionElements/);
   assert.match(css, /[.]subtle-blocked-caption/);
   assert.match(overlay, /:host \{[^}]*overflow: hidden;/s);
   assert.match(overlay, /[.]window \{[^}]*box-sizing: border-box;/s);
   assert.match(overlay, /[.]row \{[^}]*display: flex;/s);
   assert.match(overlay, /[.]segment \{[^}]*display: inline-block;/s);
+  assert.match(overlay, /data-surface="shorts"\]\[data-shorts-optimised="true"/);
+  assert.match(css, /data-subtle-surface="shorts"/);
+  assert.match(css, /--subtle-shorts-width/);
 });
 
 function read(relativePath) {
