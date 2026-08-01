@@ -5,7 +5,7 @@ Subtle makes captions easier to read on YouTube and Netflix. It styles each site
 ## What it does
 
 - Restyle native captions with readable presets, seven local font families, independent text/backdrop/window colours and opacity, five edge styles, size and position controls.
-- Add a translated second line on YouTube when the video supplies a caption track.
+- Add a second caption language on YouTube when the video supplies that track.
 - Add a second language supplied with the current Netflix title.
 - Add a local SRT or VTT second line on YouTube or Netflix.
 - Keep the second line attached to the complete native caption group as Netflix moves dialogue around the frame.
@@ -33,7 +33,7 @@ Platform caption requests stay between the active tab and YouTube or Netflix inf
 
 ## Limitations
 
-- YouTube translation availability depends on the caption tracks and translation support for each video.
+- YouTube second-language availability depends on the caption tracks supplied with each video.
 - Netflix second-language availability depends on the tracks packaged with each title; Subtle does not machine-translate Netflix captions.
 - YouTube's timed-text request and Netflix's player manifest are private interfaces and can change without notice.
 - Netflix DFXP and IMSC tracks retain timing and text but not every authored position or typographic treatment.

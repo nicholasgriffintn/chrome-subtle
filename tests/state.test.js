@@ -47,7 +47,7 @@ test("patching state cannot introduce unknown enum values", () => {
     edgeStyle: "glow"
   });
 
-  assert.equal(state.mode, "dual");
+  assert.equal(state.mode, SubtleState.DEFAULT_STATE.mode);
   assert.equal(state.position, "bottom");
   assert.equal(state.fontFamily, "proportional_sans");
   assert.equal(state.edgeStyle, "outline");

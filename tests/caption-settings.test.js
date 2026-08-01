@@ -3,11 +3,11 @@ const assert = require("node:assert/strict");
 const CaptionSettings = require("../lib/caption-settings.js");
 const SubtleState = require("../lib/state.js");
 
-test("YouTube settings describe translation while Netflix settings list title tracks", () => {
+test("YouTube and Netflix settings list the current title's caption tracks", () => {
   const state = SubtleState.normaliseState({ secondarySource: "platform", targetLanguage: "es" });
   const youtube = CaptionSettings.sourceView(state, {
     platformId: "youtube",
-    sourceLabel: "YouTube translation",
+    sourceLabel: "YouTube captions",
     availableTracks: [
       { languageCode: "en", label: "English" },
       { languageCode: "es", label: "Spanish" }
@@ -24,8 +24,8 @@ test("YouTube settings describe translation while Netflix settings list title tr
     selectedTrack: { languageCode: "es" }
   });
 
-  assert.equal(youtube.languageLabel, "Translate to");
-  assert.equal(youtube.platformSourceLabel, "YouTube translation");
+  assert.equal(youtube.languageLabel, "Second language");
+  assert.equal(youtube.platformSourceLabel, "YouTube captions");
   assert.deepEqual(youtube.languageOptions, [
     { value: "en", label: "English" },
     { value: "es", label: "Spanish" }
@@ -56,7 +56,7 @@ test("unsupported pages expose only the local file source", () => {
   assert.equal(view.showUpload, true);
 });
 
-test("YouTube translation stays disabled until the current player supplies languages", () => {
+test("YouTube captions stay disabled until the current player supplies languages", () => {
   const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), {
     platformId: "youtube",
     availableTracks: []

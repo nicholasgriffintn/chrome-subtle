@@ -39,7 +39,7 @@ test("YouTube caption content is requested through the page bridge", async () =>
 });
 
 test("a YouTube 429 remains identifiable for request deduplication", async () => {
-  const harness = contentHarness({ status: 429, error: "YouTube is rate-limiting caption translation." });
+  const harness = contentHarness({ status: 429, error: "YouTube is rate-limiting this caption track." });
   await assert.rejects(
     YouTubeCaptions.loadTrack(youtubeTrack(), "en", harness.document, { createEvent: harness.createEvent }),
     (error) => error.status === 429

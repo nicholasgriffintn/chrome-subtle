@@ -57,7 +57,7 @@
     document.dispatchEvent(new CustomEvent(TRACK_EVENT, {
       detail: {
         videoId: capturedVideoId || pageVideoId,
-        availableLanguages: currentCaptionLanguages(),
+        availableLanguages: currentCaptionTracks().map(({ sourceUrl: _sourceUrl, kind: _kind, ...language }) => language),
         tracks: [{
           baseUrl: url.href,
           languageCode,
@@ -75,7 +75,7 @@
     return document.querySelector?.(selector) || null;
   }
 
-  function currentCaptionLanguages() {
+  function currentCaptionTracks() {
     try {
       const player = activePlayer();
       const response = player?.getPlayerResponse?.();
@@ -98,7 +98,12 @@
           || (typeof displayName === "string" ? displayName : displayName?.simpleText)
           || displayName?.runs?.map((run) => run?.text || "").join("")
           || languageCode;
-        return [{ languageCode, label: String(label).replace(/\s+/g, " ").trim().slice(0, 120) || languageCode }];
+        return [{
+          languageCode,
+          label: String(label).replace(/\s+/g, " ").trim().slice(0, 120) || languageCode,
+          kind: language?.kind === "asr" ? "asr" : "standard",
+          sourceUrl: String(language?.baseUrl || language?.url || "").slice(0, 16_384)
+        }];
       });
     } catch (_error) {
       return [];
@@ -108,19 +113,20 @@
   async function handleContentRequest(event) {
     const requestId = String(event.detail?.requestId || "").trim().slice(0, 120);
     const requestedLanguage = String(event.detail?.targetLanguage || "").trim().slice(0, 35);
-    const language = currentCaptionLanguages().find((candidate) => (
+    const language = currentCaptionTracks().find((candidate) => (
       candidate.languageCode.toLowerCase() === requestedLanguage.toLowerCase()
     ));
     if (!requestId || !language || !capturedUrl || typeof pageFetch !== "function") return;
     if (capturedVideoId && capturedVideoId !== currentVideoId()) return;
     try {
-      const url = new URL(capturedUrl);
+      const url = directTrackUrl(language);
+      if (!url) throw new Error("invalid track URL");
       url.searchParams.set("fmt", "json3");
-      url.searchParams.set("tlang", language.languageCode);
+      url.searchParams.delete("tlang");
       const response = await pageFetch(url.href, { method: "GET", credentials: "include" });
       if (!response.ok) {
         const error = response.status === 429
-          ? "YouTube is rate-limiting caption translation. Waiting for the player's next caption request."
+          ? "YouTube is rate-limiting this caption track. Waiting for the player's next caption request."
           : `YouTube captions returned ${response.status}.`;
         publishContent({ requestId, status: response.status, error });
         return;
@@ -135,6 +141,24 @@
 
   function publishContent(detail) {
     document.dispatchEvent(new CustomEvent(CONTENT_EVENT, { detail }));
+  }
+
+  function directTrackUrl(track) {
+    try {
+      const captured = new URL(capturedUrl);
+      const url = track.sourceUrl ? new URL(track.sourceUrl, location.href) : new URL(captured.href);
+      if (!ALLOWED_HOSTS.has(url.hostname.toLowerCase()) || url.pathname !== TIMED_TEXT_PATH) return null;
+      const proof = captured.searchParams.get("pot");
+      if (proof) url.searchParams.set("pot", proof);
+      if (!track.sourceUrl) {
+        url.searchParams.set("lang", track.languageCode);
+        if (track.kind === "asr") url.searchParams.set("kind", "asr");
+        else url.searchParams.delete("kind");
+      }
+      return url.searchParams.get("pot") ? url : null;
+    } catch (_error) {
+      return null;
+    }
   }
 
   function scanResourceTiming() {

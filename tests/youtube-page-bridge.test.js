@@ -30,7 +30,10 @@ test("the bridge fetches a menu language in page context and ignores unsupported
     detail: { requestId: "blocked", targetLanguage: "de" }
   }));
 
-  assert.equal(new URL(harness.requests[1]).searchParams.get("tlang"), "fr");
+  const selectedUrl = new URL(harness.requests[1]);
+  assert.equal(selectedUrl.searchParams.get("lang"), "fr");
+  assert.equal(selectedUrl.searchParams.get("pot"), "proof");
+  assert.equal(selectedUrl.searchParams.has("tlang"), false);
   assert.equal(harness.contentEvents.length, 1);
   assert.equal(harness.contentEvents[0].detail.requestId, "allowed");
 });
@@ -49,8 +52,16 @@ function createHarness() {
     getOption(module, option) {
       if (module !== "captions" || option !== "tracklist") return [];
       return [
-        { languageCode: "en", displayName: "English" },
-        { languageCode: "fr", name: { simpleText: "Français" } }
+        {
+          languageCode: "en",
+          displayName: "English",
+          baseUrl: "https://www.youtube.com/api/timedtext?v=abc123&lang=en"
+        },
+        {
+          languageCode: "fr",
+          name: { simpleText: "Français" },
+          baseUrl: "https://www.youtube.com/api/timedtext?v=abc123&lang=fr"
+        }
       ];
     },
     getPlayerResponse() { return { videoDetails: { videoId: "abc123" } }; }
