@@ -19,6 +19,8 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.deepEqual(manifest.optional_host_permissions, access.all().flatMap((platform) => platform.origins));
   assert.ok(isolated.js.indexOf("lib/state.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.includes("lib/runtime-context.js"));
+  assert.ok(isolated.js.indexOf("lib/cues.js") < isolated.js.indexOf("lib/native-caption-filters.js"));
+  assert.ok(isolated.js.indexOf("lib/native-caption-filters.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/runtime-context.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/platform-captions.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/runtime.js") < isolated.js.indexOf("content.js"));

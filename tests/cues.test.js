@@ -80,6 +80,28 @@ test("block filters distinguish descriptions, music and speaker labels", () => {
   }), false);
 });
 
+test("built-in block filters inspect each line of a combined native caption", () => {
+  assert.equal(SubtleCues.shouldBlockCue("[Music]\nNow or what?", { blockMusic: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("Hello\n[door closes]", { hideSoundCues: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("Previously on…\nNARRATOR: The end", { blockSpeakerLabels: true }), true);
+  assert.equal(SubtleCues.shouldBlockCue("Music makes this scene work", { blockMusic: true }), false);
+});
+
+test("built-in filters remove embedded noise without discarding dialogue", () => {
+  const caption = ">> Hating me is like all you\ndo. [music]\nBreakfast too, dinner.";
+
+  assert.equal(
+    SubtleCues.filterCueText(caption, { blockMusic: true }),
+    ">> Hating me is like all you\ndo.\nBreakfast too, dinner."
+  );
+  assert.equal(SubtleCues.filterCueText("Wait [door closes] for me", { hideSoundCues: true }), "Wait for me");
+  assert.equal(SubtleCues.filterCueText("Wait (I think) for me", { hideSoundCues: true }), "Wait (I think) for me");
+  assert.equal(SubtleCues.filterCueText("NARRATOR: Previously on…", { blockSpeakerLabels: true }), "Previously on…");
+  assert.equal(SubtleCues.filterCueText("[Music]", { blockMusic: true }), "");
+  assert.equal(SubtleCues.filterCueText("Music makes this scene work", { blockMusic: true }), "Music makes this scene work");
+  assert.equal(SubtleCues.filterCueText("  Keep site spacing", { blockMusic: true }), "  Keep site spacing");
+});
+
 test("custom block filters use safe literal, case-insensitive matching", () => {
   const filters = { customBlockedTerms: "Sponsored by\n[AD]\n.*" };
 

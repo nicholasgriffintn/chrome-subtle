@@ -199,6 +199,24 @@ test("text changes inside a native caption refresh anchoring", () => {
   );
 });
 
+test("native caption filtering targets individual YouTube segments", () => {
+  const soundCue = captionCandidate("[singing]");
+  const dialogue = captionCandidate(">> Now or what?");
+  const captionWindow = captionCandidate("[singing] >> Now or what?");
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === ".ytp-caption-segment") return [soundCue, dialogue];
+      if (selector === ".caption-window") return [captionWindow];
+      return [];
+    }
+  };
+
+  assert.deepEqual(
+    SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.youtube, root),
+    [soundCue, dialogue]
+  );
+});
+
 test("filtered native captions remain discoverable so filters can be removed", () => {
   const hiddenCaption = captionCandidate("[Music]");
   hiddenCaption.style = { visibility: "hidden" };
