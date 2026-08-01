@@ -12,6 +12,7 @@
   --subtle-font-variant: normal;
   --subtle-font-weight: 650;
   --subtle-line-height: 1.24;
+  --subtle-native-line-height: 61px;
   --subtle-letter-spacing: 0.2px;
   --subtle-movie-width: 42ch;
   --subtle-offset: 12%;
@@ -33,9 +34,9 @@
   font-variant: var(--subtle-font-variant) !important;
   font-size: var(--subtle-font-size) !important;
   font-weight: var(--subtle-font-weight) !important;
-  line-height: var(--subtle-line-height) !important;
+  line-height: var(--subtle-native-line-height) !important;
   letter-spacing: var(--subtle-letter-spacing) !important;
-  padding: var(--subtle-window-padding) !important;
+  padding: 0 var(--subtle-window-padding) !important;
   border-radius: var(--subtle-caption-radius) !important;
   -webkit-backdrop-filter: blur(var(--subtle-background-blur)) !important;
   backdrop-filter: blur(var(--subtle-background-blur)) !important;

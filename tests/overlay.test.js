@@ -216,6 +216,30 @@ test("second-line row spacing grows with padding, edge width and shadow", () => 
   assert.ok(spacious > compact);
 });
 
+test("native caption line height reserves space for window and edge paint", () => {
+  const compact = SubtleOverlay.nativeCaptionLineHeight({
+    ...SubtleState.createDefaultState(),
+    fontSize: 40,
+    lineHeight: 1.2,
+    captionPadding: 0,
+    edgeStyle: "none",
+    outlineWidth: 0,
+    shadowIntensity: 0
+  });
+  const styled = SubtleOverlay.nativeCaptionLineHeight({
+    ...SubtleState.createDefaultState(),
+    fontSize: 40,
+    lineHeight: 1.2,
+    captionPadding: 6,
+    edgeStyle: "outline",
+    outlineWidth: 3,
+    shadowIntensity: 0
+  });
+
+  assert.equal(compact, 48);
+  assert.equal(styled, 66);
+});
+
 test("the native caption gap clears styled multi-line caption overflow", () => {
   const gap = SubtleOverlay.captionGap(34);
   const placement = SubtleOverlay.calculateAnchoredPlacement(

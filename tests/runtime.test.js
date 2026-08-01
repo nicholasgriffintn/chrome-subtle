@@ -159,6 +159,7 @@ function createHarness(options = {}) {
       },
       positionNearNative() {},
       captionGap: () => 8,
+      nativeCaptionLineHeight: () => 60,
       remove() {}
     },
     SubtleRuntimeContext: {
