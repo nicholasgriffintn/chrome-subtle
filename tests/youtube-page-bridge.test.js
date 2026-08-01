@@ -36,6 +36,8 @@ test("the bridge fetches a menu language in page context and ignores unsupported
   assert.equal(selectedUrl.searchParams.has("tlang"), false);
   assert.equal(harness.contentEvents.length, 1);
   assert.equal(harness.contentEvents[0].detail.requestId, "allowed");
+  assert.equal(harness.timeoutCount(), 1);
+  assert.ok(harness.requestOptions[1].signal instanceof AbortSignal);
 });
 
 function createHarness() {
@@ -43,6 +45,8 @@ function createHarness() {
   const trackEvents = [];
   const contentEvents = [];
   const requests = [];
+  const requestOptions = [];
+  let timeoutCount = 0;
   class FakeXhr { open() {} send() {} }
   class FakePerformanceObserver { observe() {} }
   class FakeCustomEvent {
@@ -82,11 +86,18 @@ function createHarness() {
     PerformanceObserver: FakePerformanceObserver,
     XMLHttpRequest: FakeXhr,
     CustomEvent: FakeCustomEvent,
-    fetch: async (url) => {
+    AbortController,
+    setTimeout(callback, delay) {
+      timeoutCount += 1;
+      return setTimeout(callback, delay);
+    },
+    clearTimeout,
+    fetch: async (url, options) => {
       requests.push(String(url));
+      requestOptions.push(options);
       return { ok: true, status: 200, text: async () => '{"events":[]}' };
     }
   };
   context.globalThis = context;
-  return { context, document, trackEvents, contentEvents, requests };
+  return { context, document, trackEvents, contentEvents, requests, requestOptions, timeoutCount: () => timeoutCount };
 }

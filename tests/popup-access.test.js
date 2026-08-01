@@ -19,3 +19,11 @@ test("unsupported sites receive a compact unavailable message", () => {
   assert.match(view.title, /doesn’t work with this site yet/);
   assert.equal("action" in view, false);
 });
+
+test("popup initialisation failures produce a visible recovery message", () => {
+  const view = PopupAccess.errorView();
+
+  assert.equal(view.kind, "error");
+  assert.match(view.title, /couldn’t open/);
+  assert.match(view.detail, /close and reopen/i);
+});

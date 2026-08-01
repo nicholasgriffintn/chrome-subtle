@@ -26,6 +26,11 @@
       const object = next.value;
       if (!object || typeof object !== "object" || seen.has(object)) continue;
       seen.add(object);
+      try {
+        if (typeof object.toJSON === "function") continue;
+      } catch (_error) {
+        continue;
+      }
       visited += 1;
       try {
         visitor(object);
@@ -183,19 +188,22 @@
   }
 
   async function fetchFirstAvailable(urls) {
-    for (const url of urls) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8_000);
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) continue;
-        const text = await response.text();
-        if (text.trim() && text.length <= 5_000_000) return text;
-      } catch (_error) {
-        // Netflix supplies redundant CDN URLs; continue to the next candidate.
-      } finally {
-        clearTimeout(timeout);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    try {
+      for (const url of urls) {
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          if (!response.ok) continue;
+          const text = await response.text();
+          if (text.trim() && text.length <= 5_000_000) return text;
+        } catch (_error) {
+          if (controller.signal.aborted) break;
+          // Netflix supplies redundant CDN URLs; continue to the next candidate.
+        }
       }
+    } finally {
+      clearTimeout(timeout);
     }
     throw new Error("No Netflix caption URL was readable.");
   }

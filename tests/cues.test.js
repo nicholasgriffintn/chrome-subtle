@@ -46,6 +46,19 @@ test("an earlier overlapping cue remains available after a newer cue ends", () =
   assert.equal(SubtleCues.cueAtTime(cues, 16).text, "long caption");
 });
 
+test("a long-running cue survives more than thirteen expired rolling updates", () => {
+  const cues = [
+    { start: 0, end: 60, text: "long caption" },
+    ...Array.from({ length: 20 }, (_, index) => ({
+      start: index + 1,
+      end: index + 1.5,
+      text: `rolling update ${index + 1}`
+    }))
+  ];
+
+  assert.equal(SubtleCues.cueAtTime(cues, 30).text, "long caption");
+});
+
 test("invalid and zero-length cues are discarded", () => {
   const cues = SubtleCues.parseTimedText(`00:03,000 --> 00:02,000\nBackwards\n\nnot timing\nNo cue`);
   assert.deepEqual(cues, []);

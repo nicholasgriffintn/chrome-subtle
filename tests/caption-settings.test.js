@@ -65,3 +65,37 @@ test("YouTube captions stay disabled until the current player supplies languages
   assert.equal(view.languageDisabled, true);
   assert.equal(view.languageOptions[0].value, "");
 });
+
+test("an imported file is parsed once while unrelated preferences change", () => {
+  const cuesPath = require.resolve("../lib/cues.js");
+  const settingsPath = require.resolve("../lib/caption-settings.js");
+  const cues = require(cuesPath);
+  const originalParseTimedText = cues.parseTimedText;
+  let parseCount = 0;
+
+  cues.parseTimedText = (text) => {
+    parseCount += 1;
+    return originalParseTimedText(text);
+  };
+  delete require.cache[settingsPath];
+
+  try {
+    const isolatedSettings = require(settingsPath);
+    const uploadedTrack = {
+      name: "captions.srt",
+      text: "00:00:01,000 --> 00:00:02,000\nHello"
+    };
+    isolatedSettings.sourceView(SubtleState.normaliseState({ secondarySource: "upload", uploadedTrack }), null);
+    isolatedSettings.sourceView(SubtleState.normaliseState({
+      secondarySource: "upload",
+      uploadedTrack,
+      fontSize: 48
+    }), null);
+
+    assert.equal(parseCount, 1);
+  } finally {
+    cues.parseTimedText = originalParseTimedText;
+    delete require.cache[settingsPath];
+    require(settingsPath);
+  }
+});

@@ -1,4 +1,4 @@
 (function initialiseSubtlePopup() {
   "use strict";
-  SubtlePopup.start().catch(() => {});
+  SubtlePopup.start().catch(SubtlePopup.showStartError);
 })();

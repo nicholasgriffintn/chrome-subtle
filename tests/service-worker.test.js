@@ -11,6 +11,7 @@ test("registration sync keeps granted scripts current and removes revoked platfo
   const updates = [];
   const removals = [];
   const additions = [];
+  const badgeTexts = [];
   const events = eventRegistry();
   const context = {
     console,
@@ -19,7 +20,7 @@ test("registration sync keeps granted scripts current and removes revoked platfo
       context.SubtleSiteAccess = SiteAccess;
     },
     chrome: {
-      action: { setBadgeText() {}, setBadgeBackgroundColor() {} },
+      action: { setBadgeText(value) { badgeTexts.push(value); }, setBadgeBackgroundColor() {} },
       storage: { local: { async get() { return { [State.STORAGE_KEY]: State.createDefaultState() }; }, async set() {} } },
       permissions: {
         async contains(permission) { return permission.origins.some((origin) => origin.includes("youtube")); },
@@ -47,6 +48,19 @@ test("registration sync keeps granted scripts current and removes revoked platfo
   assert.deepEqual(removals.sort(), SiteAccess.registrationIds(SiteAccess.forId("netflix")).sort());
   assert.deepEqual(updates.map((script) => script.id).sort(), SiteAccess.registrationIds(SiteAccess.forId("youtube")).sort());
   assert.deepEqual(additions, []);
+
+  events.emit("message", {
+    type: "SUBTLE_STATUS",
+    status: { playerFound: true, enabled: false }
+  }, { tab: { id: 7 } });
+  events.emit("message", {
+    type: "SUBTLE_STATUS",
+    status: { playerFound: true, enabled: true }
+  }, { tab: { id: 7 } });
+  assert.deepEqual(JSON.parse(JSON.stringify(badgeTexts.slice(-2))), [
+    { tabId: 7, text: "" },
+    { tabId: 7, text: "CC" }
+  ]);
 });
 
 function eventRegistry() {
@@ -54,6 +68,9 @@ function eventRegistry() {
   return {
     event(name) {
       return { addListener(listener) { listeners.set(name, listener); } };
+    },
+    emit(name, ...args) {
+      return listeners.get(name)?.(...args);
     }
   };
 }

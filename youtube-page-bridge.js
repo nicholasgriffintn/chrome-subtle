@@ -118,12 +118,18 @@
     ));
     if (!requestId || !language || !capturedUrl || typeof pageFetch !== "function") return;
     if (capturedVideoId && capturedVideoId !== currentVideoId()) return;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
     try {
       const url = directTrackUrl(language);
       if (!url) throw new Error("invalid track URL");
       url.searchParams.set("fmt", "json3");
       url.searchParams.delete("tlang");
-      const response = await pageFetch(url.href, { method: "GET", credentials: "include" });
+      const response = await pageFetch(url.href, {
+        method: "GET",
+        credentials: "include",
+        signal: controller.signal
+      });
       if (!response.ok) {
         const error = response.status === 429
           ? "YouTube is rate-limiting this caption track. Waiting for the player's next caption request."
@@ -136,6 +142,8 @@
       publishContent({ requestId, status: response.status, text });
     } catch (_error) {
       publishContent({ requestId, error: "YouTube did not return translated captions." });
+    } finally {
+      clearTimeout(timeout);
     }
   }
 

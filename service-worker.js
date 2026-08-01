@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   if (message?.type === "SUBTLE_STATUS" && sender.tab?.id) {
-    const active = message.status?.playerFound;
+    const active = message.status?.enabled && message.status?.playerFound;
     chrome.action.setBadgeText({ tabId: sender.tab.id, text: active ? "CC" : "" });
     chrome.action.setBadgeBackgroundColor({ tabId: sender.tab.id, color: "#f2b84b" });
   }

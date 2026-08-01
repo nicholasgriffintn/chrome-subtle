@@ -51,6 +51,7 @@ test("the page bridge has no extension API access and the content entry point on
 
 test("popup exposes dual mode, local import and privacy status", () => {
   const popup = read("popup.html");
+  const popupCss = read("popup.css");
   const controller = read("lib/popup-controller.js");
   const settings = read("lib/caption-settings.js");
   assert.match(popup, /data-mode="dual"/);
@@ -75,6 +76,12 @@ test("popup exposes dual mode, local import and privacy status", () => {
   assert.match(controller, /message[?][.]type !== "SUBTLE_STATUS"/);
   assert.match(controller, /chrome[.]permissions[.]request/);
   assert.match(controller, /SubtlePopupAccess[.]view/);
+  assert.match(read("popup.js"), /catch\(SubtlePopup[.]showStartError\)/);
+  assert.match(popup, /id="source-note"[^>]*role="status"/);
+  assert.match(popupCss, /[.]upload-button:focus-within/);
+  assert.match(popupCss, /[.]power:has\(input:focus-visible\)/);
+  assert.match(popupCss, /[.]check-row:has\(input:focus-visible\)/);
+  assert.doesNotMatch(popupCss, /[.]upload-button input[^}]*pointer-events:\s*none/s);
   assert.doesNotMatch(controller, /Netflix does not expose a stable second track/);
 });
 

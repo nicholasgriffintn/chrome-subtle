@@ -22,7 +22,7 @@
       </label>
     </header>
 
-    <section id="limited-view" class="limited-view">
+    <section id="limited-view" class="limited-view" aria-live="polite">
       <span id="limited-eyebrow" class="eyebrow">Checking this page</span>
       <h2 id="limited-title">One moment…</h2>
       <p id="limited-detail">Subtle is checking whether this site is supported.</p>
@@ -84,7 +84,7 @@
           </label>
           <button id="clear-upload" class="quiet-button" type="button">Clear</button>
         </div>
-        <p id="source-note" class="source-note"></p>
+        <p id="source-note" role="status" class="source-note"></p>
       </section>
 
       <section class="panel style-panel">
@@ -201,6 +201,7 @@
   <script src="lib/imports.js"></script>
   <script src="lib/overlay.js"></script>
   <script src="lib/caption-settings.js"></script>
+  <script src="lib/popup-state-store.js"></script>
   <script src="lib/popup-controller.js"></script>
   <script src="popup.js"></script>
 </body>

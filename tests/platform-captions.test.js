@@ -63,3 +63,35 @@ test("YouTube exposes only languages from the player's current caption menu", ()
     { languageCode: "fr", label: "Français" }
   ]);
 });
+
+test("a failed page-bridge dispatch cleans up its response listener immediately", async () => {
+  const originalSetTimeout = global.setTimeout;
+  const originalClearTimeout = global.clearTimeout;
+  const listeners = new Set();
+  let cleared = false;
+  global.setTimeout = () => 42;
+  global.clearTimeout = (timer) => { if (timer === 42) cleared = true; };
+
+  try {
+    await assert.rejects(
+      PlatformCaptions.forPlatform("netflix").loadCues(
+        { id: "track-1", contentId: "123", format: "webvtt" },
+        {},
+        {
+          documentRef: {
+            addEventListener(_type, listener) { listeners.add(listener); },
+            removeEventListener(_type, listener) { listeners.delete(listener); },
+            dispatchEvent() { throw new Error("page context unavailable"); }
+          },
+          createEvent: (type, detail) => ({ type, detail })
+        }
+      ),
+      /page context unavailable/
+    );
+    assert.equal(listeners.size, 0);
+    assert.equal(cleared, true);
+  } finally {
+    global.setTimeout = originalSetTimeout;
+    global.clearTimeout = originalClearTimeout;
+  }
+});

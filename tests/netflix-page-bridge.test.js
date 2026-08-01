@@ -73,6 +73,24 @@ test("Netflix track content is fetched by opaque identifier with URL fallback", 
     "https://cdn.nflxvideo.net/first.vtt",
     "https://cdn.nflxvideo.net/second.vtt"
   ]);
+  assert.equal(harness.timeoutCount(), 1);
+});
+
+test("Netflix's JSON hook respects toJSON without walking discarded data", () => {
+  const harness = createHarness();
+  vm.runInContext(bridgeSource, harness.context);
+  harness.context.discardedReads = 0;
+
+  vm.runInContext(`
+    const discarded = {};
+    Object.defineProperty(discarded, "expensive", {
+      enumerable: true,
+      get() { discardedReads += 1; return {}; }
+    });
+    JSON.stringify({ discarded, toJSON() { return { safe: true }; } });
+  `, harness.context);
+
+  assert.equal(harness.context.discardedReads, 0);
 });
 
 function manifestFixture() {
@@ -113,6 +131,7 @@ function createHarness(options = {}) {
   const events = [];
   const fetches = [];
   const listeners = new Map();
+  let timeoutCount = 0;
   class FakeCustomEvent {
     constructor(type, init) {
       this.type = type;
@@ -146,9 +165,12 @@ function createHarness(options = {}) {
       fetches.push(url);
       return fetchImpl(url, init);
     },
-    setTimeout,
+    setTimeout(callback, delay) {
+      timeoutCount += 1;
+      return setTimeout(callback, delay);
+    },
     clearTimeout
   });
   context.globalThis = context;
-  return { context, document, events, fetches };
+  return { context, document, events, fetches, timeoutCount: () => timeoutCount };
 }
