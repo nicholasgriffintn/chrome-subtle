@@ -13,7 +13,7 @@ export function Hero() {
           <a className="button button-primary" href="/subtle.zip" download>Download for Chrome</a>
           <a className="text-link" href="#how-it-works">How it works <span>↓</span></a>
         </div>
-        <p className="install-note">Manifest V3 · Chrome 120+ · Version 0.1.0</p>
+        <p className="install-note">Manifest V3 · Chrome 120+ · Version 0.2.0</p>
       </div>
       <ProductPreview />
     </section>

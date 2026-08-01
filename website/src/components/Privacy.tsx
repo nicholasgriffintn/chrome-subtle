@@ -8,12 +8,13 @@ export function Privacy() {
       <div className="privacy-copy">
         <h2 id="privacy-title">Your subtitles stay with the film.</h2>
         <p>
-          Settings and imported subtitle files stay in Chrome's local extension storage. Subtle has no account system, analytics, advertising, remote scripts or translation service.
+          Settings and imported subtitle files stay in Chrome's local extension storage. Platform tracks are requested only from the service inside the active tab. Subtle has no accounts, analytics, advertising, remote scripts or external translation service.
         </p>
         <ul>
           <li>Only runs on supported sites</li>
           <li>Requests storage permission only</li>
           <li>Never uploads imported subtitle files</li>
+          <li>Never stores track URLs or caption text</li>
         </ul>
       </div>
     </section>

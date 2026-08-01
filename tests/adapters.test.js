@@ -101,12 +101,102 @@ test("native caption discovery prefers the tight visible caption box", () => {
   );
 });
 
+test("native caption measurement covers multiple YouTube caption windows", () => {
+  const first = captionCandidate("First", { left: 300, top: 480, right: 500, bottom: 520, width: 200, height: 40 });
+  const second = captionCandidate("Second", { left: 510, top: 480, right: 710, bottom: 520, width: 200, height: 40 });
+  const root = { querySelectorAll: (selector) => selector === ".caption-window" ? [first, second] : [] };
+
+  assert.deepEqual(
+    SubtitleAdapters.measureNativeCaption(SubtitleAdapters.ADAPTERS.youtube, root),
+    {
+      rect: { left: 300, top: 480, right: 710, bottom: 520, width: 410, height: 40 },
+      alignment: "center"
+    }
+  );
+});
+
 test("native caption discovery ignores empty and hidden boxes", () => {
   const empty = captionCandidate("");
   const hidden = captionCandidate("old caption", { width: 0, height: 0 });
   const root = { querySelectorAll: () => [empty, hidden] };
 
   assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.netflix, root), null);
+});
+
+test("Netflix native caption measurement covers every simultaneously positioned line", () => {
+  const first = captionCandidate("I thought they'd", {
+    left: 180, top: 390, right: 716, bottom: 485, width: 536, height: 95
+  });
+  const second = captionCandidate("go away, but they're not.", {
+    left: 180, top: 490, right: 1010, bottom: 584, width: 830, height: 94
+  });
+  const root = {
+    querySelectorAll(selector) {
+      return selector === ".player-timedtext-text-container" ? [first, second] : [];
+    }
+  };
+
+  assert.deepEqual(
+    SubtitleAdapters.measureNativeCaption(SubtitleAdapters.ADAPTERS.netflix, root),
+    {
+      rect: { left: 180, top: 390, right: 1010, bottom: 584, width: 830, height: 194 },
+      alignment: "center"
+    }
+  );
+});
+
+test("Netflix native caption measurement ignores fading stale lines", () => {
+  const active = captionCandidate("Current line", {
+    left: 300, top: 500, right: 700, bottom: 550, width: 400, height: 50
+  });
+  const stale = captionCandidate("Previous line", {
+    left: 20, top: 40, right: 980, bottom: 100, width: 960, height: 60
+  });
+  stale.style = { opacity: "0" };
+  const root = { querySelectorAll: () => [active, stale] };
+
+  assert.deepEqual(
+    SubtitleAdapters.measureNativeCaption(SubtitleAdapters.ADAPTERS.netflix, root),
+    {
+      rect: { left: 300, top: 500, right: 700, bottom: 550, width: 400, height: 50 },
+      alignment: "center"
+    }
+  );
+});
+
+test("native caption mutations can refresh anchoring without rematching the video", () => {
+  const caption = {
+    nodeName: "DIV",
+    matches: (selector) => selector === ".player-timedtext-text-container",
+    querySelector: () => null
+  };
+
+  assert.equal(
+    SubtitleAdapters.mutationsContainNativeCaptions(
+      SubtitleAdapters.ADAPTERS.netflix,
+      [{ addedNodes: [caption], removedNodes: [] }]
+    ),
+    true
+  );
+});
+
+test("text changes inside a native caption refresh anchoring", () => {
+  const caption = {};
+  const span = {
+    nodeType: 1,
+    matches: () => false,
+    querySelector: () => null,
+    closest: (selector) => selector === ".player-timedtext-text-container" ? caption : null
+  };
+  const text = { nodeType: 3, parentElement: span };
+
+  assert.equal(
+    SubtitleAdapters.mutationsContainNativeCaptions(
+      SubtitleAdapters.ADAPTERS.netflix,
+      [{ target: text, addedNodes: [], removedNodes: [] }]
+    ),
+    true
+  );
 });
 
 function videoCandidate({ paused, closest, area = 640 * 360, parent = null }) {

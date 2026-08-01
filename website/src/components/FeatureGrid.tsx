@@ -8,7 +8,7 @@ const features = [
   {
     number: "02",
     title: "Learn a new language while you watch",
-    copy: "Pair YouTube's supplied caption track with a translated line. On supported sites, import a timed SRT or VTT file as the second line.",
+    copy: "Use the platform's built-in translations or upload your own to show captions in multiple languages at the same time.",
     accent: "mint"
   },
   {

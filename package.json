@@ -1,11 +1,11 @@
 {
   "name": "subtle-chrome-extension",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "icons": "node scripts/render-icons.mjs",
-    "check": "node --check service-worker.js && node --check page-bridge.js && node --check content.js && node --check popup.js && node --check lib/*.js",
+    "check": "node --check service-worker.js && node --check youtube-page-bridge.js && node --check netflix-page-bridge.js && node --check content.js && node --check popup.js && node --check lib/*.js",
     "test": "node --test tests/*.test.js",
-    "package": "zip -FS -r subtle.zip manifest.json content.css content.js page-bridge.js popup.css popup.html popup.js service-worker.js lib icons README.md package.json"
+    "package": "zip -FS -r subtle.zip manifest.json content.css content.js youtube-page-bridge.js netflix-page-bridge.js popup.css popup.html popup.js service-worker.js lib icons README.md CONTEXT.md package.json"
   }
 }

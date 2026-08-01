@@ -9,9 +9,9 @@ export function Compatibility() {
           <span role="columnheader">Capability</span><span role="columnheader">YouTube</span><span role="columnheader">Netflix</span>
         </div>
         <PlatformRow label="Native caption styling" youtube="Included" netflix="Included" />
-        <PlatformRow label="Official translated line" youtube="When available" netflix="Not exposed" />
+        <PlatformRow label="Platform second line" youtube="Translation when available" netflix="Title languages when available" />
         <PlatformRow label="Local SRT / VTT line" youtube="Included" netflix="Included" />
-        <PlatformRow label="Data sent elsewhere" youtube="None" netflix="None" />
+        <PlatformRow label="Sent to third parties" youtube="None" netflix="None" />
       </div>
     </section>
   );

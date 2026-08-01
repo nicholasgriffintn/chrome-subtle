@@ -1,7 +1,5 @@
 .claude
-.pnpm-store/
 node_modules/
-subtle.zip
-website/dist/
-website/node_modules/
-website/public/subtle.zip
+*.zip
+dist
+CONTEXT.md

@@ -18,7 +18,7 @@ export function Installation() {
           </li>
         ))}
       </ol>
-      <a className="button button-primary" href="/subtle.zip" download>Download Subtle 0.1.0</a>
+      <a className="button button-primary" href="/subtle.zip" download>Download Subtle 0.2.0</a>
       <p className="prototype-note">This is a local-development preview, not yet a Chrome Web Store release.</p>
     </section>
   );

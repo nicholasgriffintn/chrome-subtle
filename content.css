@@ -29,29 +29,11 @@
   box-decoration-break: clone !important;
 }
 
-:root[data-subtle-enabled] .ytp-caption-window-container {
-  bottom: var(--subtle-offset) !important;
-}
-
-:root[data-subtle-enabled][data-subtle-mode="dual"] .ytp-caption-window-container {
-  bottom: var(--subtle-primary-offset) !important;
-}
-
-:root[data-subtle-enabled][data-subtle-position="top"] .ytp-caption-window-container {
-  top: var(--subtle-offset) !important;
-  bottom: auto !important;
-}
-
 :root[data-subtle-enabled] .player-timedtext {
-  bottom: var(--subtle-offset) !important;
   pointer-events: none !important;
 }
 
-:root[data-subtle-enabled][data-subtle-mode="dual"] .player-timedtext {
-  bottom: var(--subtle-primary-offset) !important;
-}
-
-:root[data-subtle-enabled][data-subtle-position="top"] .player-timedtext {
+:root[data-subtle-enabled][data-subtle-position="top"] .caption-window {
   top: var(--subtle-offset) !important;
   bottom: auto !important;
 }

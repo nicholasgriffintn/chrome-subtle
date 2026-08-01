@@ -57,13 +57,13 @@
         <label class="field" id="source-field" for="secondary-source">
           <span>Subtitle source</span>
           <select id="secondary-source">
-            <option id="youtube-source-option" value="youtube">YouTube translation</option>
+            <option id="platform-source-option" value="platform">Platform captions</option>
             <option value="upload">Local SRT or VTT</option>
           </select>
         </label>
 
         <label class="field" id="language-field" for="target-language">
-          <span>Translate to</span>
+          <span id="language-label">Translate to</span>
           <select id="target-language">
             <option value="en">English</option>
             <option value="es">Spanish</option>
@@ -200,6 +200,7 @@
   <script src="lib/cues.js"></script>
   <script src="lib/imports.js"></script>
   <script src="lib/overlay.js"></script>
+  <script src="lib/caption-settings.js"></script>
   <script src="lib/popup-controller.js"></script>
   <script src="popup.js"></script>
 </body>

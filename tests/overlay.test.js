@@ -75,13 +75,72 @@ test("an absent cue hides the complete window layer", () => {
   }
 });
 
+test("unchanged captions do not rewrite the overlay on every animation frame", () => {
+  const originalDocument = global.document;
+  global.document = { createElement: createFakeElement };
+  try {
+    const player = createFakeElement();
+    player.querySelector = () => null;
+    const host = SubtleOverlay.create(player);
+    const state = SubtleState.createDefaultState();
+
+    assert.equal(SubtleOverlay.render(host, { text: "Stable caption" }, state), true);
+    const replacements = host._subtleLine.replaceWrites;
+    const styleWrites = host.style.writes;
+
+    assert.equal(SubtleOverlay.render(host, { text: "Stable caption" }, state), false);
+    assert.equal(host._subtleLine.replaceWrites, replacements);
+    assert.equal(host.style.writes, styleWrites);
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
+test("authored caption lines retain separate foreground backgrounds", () => {
+  const originalDocument = global.document;
+  global.document = { createElement: createFakeElement };
+  try {
+    const player = createFakeElement();
+    player.querySelector = () => null;
+    const host = SubtleOverlay.create(player);
+
+    SubtleOverlay.render(
+      host,
+      { text: "I thought they'd\ngo away, but they're not." },
+      SubtleState.createDefaultState()
+    );
+
+    assert.equal(host._subtleLine.children.length, 2);
+    assert.equal(host._subtleLine.children[0].children[0].textContent, "I thought they'd");
+    assert.equal(host._subtleLine.children[1].children[0].textContent, "go away, but they're not.");
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
 function createFakeElement() {
-  return {
+  let textContent = "";
+  const element = {
     dataset: {},
     hidden: false,
-    style: { setProperty() {}, removeProperty() {} },
+    children: [],
+    replaceWrites: 0,
+    style: {
+      writes: 0,
+      setProperty() { this.writes += 1; },
+      removeProperty() { this.writes += 1; }
+    },
     setAttribute() {},
     attachShadow() { return createFakeElement(); },
-    append(...children) { this.children = [...(this.children || []), ...children]; }
+    append(...children) { this.children.push(...children); },
+    replaceChildren(...children) {
+      this.children = children;
+      this.replaceWrites += 1;
+    }
   };
+  Object.defineProperty(element, "textContent", {
+    get() { return textContent; },
+    set(value) { textContent = String(value); }
+  });
+  return element;
 }

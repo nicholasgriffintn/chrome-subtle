@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-const bridgeSource = fs.readFileSync(path.resolve(__dirname, "..", "page-bridge.js"), "utf8");
+const bridgeSource = fs.readFileSync(path.resolve(__dirname, "..", "youtube-page-bridge.js"), "utf8");
 
 test("the bridge publishes the player's proof-bearing timed-text request", async () => {
   const harness = createHarness();
@@ -33,14 +33,14 @@ function createHarness() {
   const events = [];
   const listeners = new Map();
   class FakeXhr {
-    open() {}
-    send() {}
+    open() { }
+    send() { }
   }
   class FakePerformanceObserver {
     constructor(callback) {
       this.callback = callback;
     }
-    observe() {}
+    observe() { }
   }
   class FakeCustomEvent {
     constructor(type, options) {

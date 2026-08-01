@@ -61,12 +61,17 @@ test("legacy font choices migrate to the expanded family set", () => {
 });
 
 test("secondary subtitle sources follow platform capabilities", () => {
-  const youtubePreference = SubtleState.normaliseState({ secondarySource: "youtube" });
+  const platformPreference = SubtleState.normaliseState({ secondarySource: "platform" });
   const uploadPreference = SubtleState.normaliseState({ secondarySource: "upload" });
 
-  assert.deepEqual(SubtleState.availableSecondarySources("youtube"), ["youtube", "upload"]);
-  assert.deepEqual(SubtleState.availableSecondarySources("netflix"), ["upload"]);
-  assert.equal(SubtleState.effectiveSecondarySource(youtubePreference, "youtube"), "youtube");
-  assert.equal(SubtleState.effectiveSecondarySource(youtubePreference, "netflix"), "upload");
+  assert.deepEqual(SubtleState.availableSecondarySources("youtube"), ["platform", "upload"]);
+  assert.deepEqual(SubtleState.availableSecondarySources("netflix"), ["platform", "upload"]);
+  assert.deepEqual(SubtleState.availableSecondarySources("unsupported"), ["upload"]);
+  assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "youtube"), "platform");
+  assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "netflix"), "platform");
   assert.equal(SubtleState.effectiveSecondarySource(uploadPreference, "netflix"), "upload");
+});
+
+test("the previous YouTube source value migrates to platform captions", () => {
+  assert.equal(SubtleState.normaliseState({ secondarySource: "youtube" }).secondarySource, "platform");
 });
