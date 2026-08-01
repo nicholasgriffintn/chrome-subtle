@@ -19,8 +19,8 @@
 }
 
 :root[data-subtle-enabled] .ytp-caption-segment,
-:root[data-subtle-enabled] .player-timedtext-text-container span,
-:root[data-subtle-enabled] [data-uia="timed-text-container"] span {
+:root[data-subtle-enabled] .player-timedtext-text-container span:not(:has(*)),
+:root[data-subtle-enabled] [data-uia="timed-text-container"] span:not(:has(*)) {
   color: var(--subtle-text-colour) !important;
   background: var(--subtle-caption-background) !important;
   box-shadow: 0 0 0 var(--subtle-window-padding) var(--subtle-window-background) !important;

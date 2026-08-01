@@ -40,7 +40,23 @@ test("the bridge fetches a menu language in page context and ignores unsupported
   assert.ok(harness.requestOptions[1].signal instanceof AbortSignal);
 });
 
-function createHarness() {
+test("the bridge rejects unrelated network traffic before constructing URLs", async () => {
+  let urlConstructions = 0;
+  class CountingURL extends URL {
+    constructor(value, base) {
+      super(value, base);
+      urlConstructions += 1;
+    }
+  }
+  const harness = createHarness({ URL: CountingURL });
+  vm.runInNewContext(bridgeSource, harness.context);
+
+  await harness.context.fetch("https://www.youtube.com/youtubei/v1/player");
+
+  assert.equal(urlConstructions, 0);
+});
+
+function createHarness(options = {}) {
   const listeners = new Map();
   const trackEvents = [];
   const contentEvents = [];
@@ -80,7 +96,7 @@ function createHarness() {
     }
   };
   const context = {
-    URL, Symbol, Reflect, document,
+    URL: options.URL || URL, Symbol, Reflect, document,
     location: { href: "https://www.youtube.com/watch?v=abc123", pathname: "/watch" },
     performance: { getEntriesByType: () => [] },
     PerformanceObserver: FakePerformanceObserver,

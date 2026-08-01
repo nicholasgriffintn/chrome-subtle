@@ -17,9 +17,11 @@
 
   function parseTimedTextUrl(value) {
     if (!value) return null;
+    const source = String(value);
+    if (!source.includes(TIMED_TEXT_PATH)) return null;
     let url;
     try {
-      url = new URL(String(value), location.href);
+      url = new URL(source, location.href);
     } catch (_error) {
       return null;
     }

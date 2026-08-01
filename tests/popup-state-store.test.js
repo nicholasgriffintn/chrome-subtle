@@ -55,6 +55,64 @@ test("only the latest write controls save status", async () => {
   assert.equal(statuses.at(-1), "Saved");
 });
 
+test("storage writes are serialised so an older save cannot finish last", async () => {
+  const writes = [];
+  const resolvers = [];
+  const store = PopupStateStore.create({
+    storageArea: {
+      set(value) {
+        writes.push(value);
+        return new Promise((resolve) => resolvers.push(resolve));
+      }
+    },
+    storageKey: "subtleState",
+    onStatus() {},
+    timers: { setTimeout: () => 1, clearTimeout() {} }
+  });
+
+  const first = store.save({ mode: "single" });
+  const second = store.save({ mode: "dual" });
+  assert.equal(writes.length, 1);
+
+  resolvers[0]();
+  await first;
+  await Promise.resolve();
+  assert.deepEqual(writes, [
+    { subtleState: { mode: "single" } },
+    { subtleState: { mode: "dual" } }
+  ]);
+
+  resolvers[1]();
+  await second;
+});
+
+test("a failed storage write does not block the next queued save", async () => {
+  const writes = [];
+  const store = PopupStateStore.create({
+    storageArea: {
+      set(value) {
+        writes.push(value);
+        return writes.length === 1
+          ? Promise.reject(new Error("Storage unavailable"))
+          : Promise.resolve();
+      }
+    },
+    storageKey: "subtleState",
+    onStatus() {},
+    timers: { setTimeout: () => 1, clearTimeout() {} }
+  });
+
+  const first = store.save({ mode: "single" });
+  const second = store.save({ mode: "dual" });
+
+  await assert.rejects(first, /Storage unavailable/);
+  await second;
+  assert.deepEqual(writes, [
+    { subtleState: { mode: "single" } },
+    { subtleState: { mode: "dual" } }
+  ]);
+});
+
 function createHarness() {
   const writes = [];
   const timers = [];

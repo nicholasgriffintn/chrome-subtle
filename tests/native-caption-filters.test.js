@@ -40,6 +40,17 @@ test("native filtering hides fully blocked captions and restores them", () => {
   assert.equal(caption.classes.has("subtle-blocked-caption"), false);
 });
 
+test("native filtering never flattens a structured site caption", () => {
+  const caption = captionElement("Dialogue [music]");
+  caption.childElementCount = 1;
+  const filters = NativeCaptionFilters.create();
+
+  filters.apply([caption], { blockMusic: true });
+
+  assert.equal(caption.textContent, "Dialogue [music]");
+  assert.equal(caption.classes.has("subtle-blocked-caption"), false);
+});
+
 function captionElement(text) {
   const classes = new Set();
   return {

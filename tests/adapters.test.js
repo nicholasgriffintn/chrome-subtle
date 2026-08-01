@@ -217,6 +217,23 @@ test("native caption filtering targets individual YouTube segments", () => {
   );
 });
 
+test("native caption filtering targets Netflix leaf spans instead of styled containers", () => {
+  const leaf = captionCandidate("Dialogue [music]");
+  const container = captionCandidate("Dialogue [music]");
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === ".player-timedtext-text-container span:not(:has(*))") return [leaf];
+      if (selector === ".player-timedtext-text-container") return [container];
+      return [];
+    }
+  };
+
+  assert.deepEqual(
+    SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.netflix, root),
+    [leaf]
+  );
+});
+
 test("filtered native captions remain discoverable so filters can be removed", () => {
   const hiddenCaption = captionCandidate("[Music]");
   hiddenCaption.style = { visibility: "hidden" };

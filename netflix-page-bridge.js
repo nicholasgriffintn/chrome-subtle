@@ -20,9 +20,11 @@
     if (!value || typeof value !== "object") return;
     const seen = new WeakSet();
     const queue = [{ value, depth: 0 }];
+    let queueIndex = 0;
     let visited = 0;
-    while (queue.length && visited < maximumObjects) {
-      const next = queue.shift();
+    while (queueIndex < queue.length && visited < maximumObjects) {
+      const next = queue[queueIndex];
+      queueIndex += 1;
       const object = next.value;
       if (!object || typeof object !== "object" || seen.has(object)) continue;
       seen.add(object);

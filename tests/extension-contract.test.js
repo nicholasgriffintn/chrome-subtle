@@ -89,6 +89,7 @@ test("popup exposes dual mode, local import and privacy status", () => {
 
 test("popup organises parity controls into accessible main, style and custom tabs", () => {
   const popup = read("popup.html");
+  const controller = read("lib/popup-controller.js");
   const presets = require("../lib/presets.js");
 
   assert.match(popup, /role="tablist"/);
@@ -105,6 +106,9 @@ test("popup organises parity controls into accessible main, style and custom tab
   assert.match(popup, /id="text-align"/);
   assert.match(popup, /id="readability-mode"/);
   assert.match(popup, /id="custom-blocked-terms"/);
+  assert.match(popup, /data-mode="single">Single</);
+  assert.match(controller, /confirm\("Reset all settings and remove the imported subtitle file[?]"\)/);
+  assert.match(controller, /finally\s*\{\s*elements[.]subtitleFile[.]value = "";/s);
   assert.equal(Object.keys(presets.all()).length, 9);
   assert.equal((popup.match(/<h2>Set the voice<\/h2>/g) || []).length, 1);
 });
@@ -168,6 +172,15 @@ test("dual captions follow native captions without displacing site containers", 
   assert.match(overlay, /data-surface="shorts"\]\[data-shorts-optimised="true"/);
   assert.match(css, /data-subtle-surface="shorts"/);
   assert.match(css, /--subtle-shorts-width/);
+});
+
+test("Netflix styling targets only the innermost caption span", () => {
+  const css = read("content.css");
+
+  assert.match(css, /[.]player-timedtext-text-container span:not\(:has\(\*\)\)/);
+  assert.match(css, /\[data-uia="timed-text-container"\] span:not\(:has\(\*\)\)/);
+  assert.doesNotMatch(css, /[.]player-timedtext-text-container span,/);
+  assert.doesNotMatch(css, /\[data-uia="timed-text-container"\] span\s*\{/);
 });
 
 function read(relativePath) {

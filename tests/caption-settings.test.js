@@ -56,6 +56,16 @@ test("unsupported pages expose only the local file source", () => {
   assert.equal(view.showUpload, true);
 });
 
+test("a known supported page keeps its platform source while runtime status is unavailable", () => {
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null, "youtube");
+
+  assert.equal(view.secondarySource, "platform");
+  assert.equal(view.platformSourceDisabled, false);
+  assert.equal(view.showLanguage, true);
+  assert.equal(view.languageDisabled, true);
+  assert.equal(view.languageOptions[0].label, "Waiting for language options…");
+});
+
 test("YouTube captions stay disabled until the current player supplies languages", () => {
   const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), {
     platformId: "youtube",
