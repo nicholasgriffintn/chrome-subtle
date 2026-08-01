@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subtle</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand">
+        <img src="icons/icon-48.png" width="36" height="36" alt="">
+        <div>
+          <h1>subtle<span>.</span></h1>
+          <p>Read every frame.</p>
+        </div>
+      </div>
+      <label class="power" aria-label="Enable Subtle">
+        <input id="enabled" type="checkbox">
+        <span aria-hidden="true"></span>
+      </label>
+    </header>
+
+    <section class="stage" aria-label="Subtitle preview">
+      <div class="film-grain" aria-hidden="true"></div>
+      <span class="stage-label">Live style</span>
+      <div class="preview-window">
+        <div class="preview-lines">
+          <p id="primary-preview">There is more to hear than sound.</p>
+          <p id="secondary-preview">Hay más que escuchar que el sonido.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="site-status" id="site-status" role="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <strong id="platform">Open YouTube or Netflix</strong>
+      <span id="status-detail">waiting for a player</span>
+    </div>
+
+    <section class="workspace">
+      <div class="mode-switch" role="group" aria-label="Subtitle mode">
+        <button type="button" data-mode="single">Polish</button>
+        <button type="button" data-mode="dual">Dual</button>
+      </div>
+
+      <section class="panel source-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Second line</span>
+            <h2>Choose its source</h2>
+          </div>
+          <span id="cue-count" class="count">—</span>
+        </div>
+
+        <label class="field" id="source-field" for="secondary-source">
+          <span>Subtitle source</span>
+          <select id="secondary-source">
+            <option id="youtube-source-option" value="youtube">YouTube translation</option>
+            <option value="upload">Local SRT or VTT</option>
+          </select>
+        </label>
+
+        <label class="field" id="language-field" for="target-language">
+          <span>Translate to</span>
+          <select id="target-language">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="ar">Arabic</option>
+            <option value="hi">Hindi</option>
+            <option value="zh-hans">Chinese (Simplified)</option>
+            <option value="zh-hant">Chinese (Traditional)</option>
+          </select>
+        </label>
+
+        <div class="upload-row" id="upload-row">
+          <label class="upload-button">
+            <input id="subtitle-file" type="file" accept=".srt,.vtt,text/vtt,application/x-subrip">
+            <span id="upload-label">Import subtitle file</span>
+          </label>
+          <button id="clear-upload" class="quiet-button" type="button">Clear</button>
+        </div>
+        <p id="source-note" class="source-note"></p>
+      </section>
+
+      <section class="panel style-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Appearance</span>
+            <h2>Make it readable</h2>
+          </div>
+        </div>
+
+        <div class="preset-row" aria-label="Style presets">
+          <button type="button" data-preset="cinema">Cinema</button>
+          <button type="button" data-preset="soft">Soft</button>
+          <button type="button" data-preset="contrast">Contrast</button>
+        </div>
+
+        <label class="range-field" for="font-size">
+          <span>Size <output id="font-size-output">34 px</output></span>
+          <input id="font-size" type="range" min="18" max="64" step="1">
+        </label>
+
+        <div class="control-grid">
+          <label class="field field-wide" for="font-family">
+            <span>Typeface</span>
+            <select id="font-family">
+              <option value="monospaced_serif">Monospaced serif</option>
+              <option value="proportional_serif">Proportional serif</option>
+              <option value="monospaced_sans">Monospaced sans-serif</option>
+              <option value="proportional_sans">Proportional sans-serif</option>
+              <option value="casual">Casual</option>
+              <option value="cursive">Cursive</option>
+              <option value="small_caps">Small capitals</option>
+            </select>
+          </label>
+          <label class="field" for="edge-style">
+            <span>Character edge</span>
+            <select id="edge-style">
+              <option value="none">No edge</option>
+              <option value="drop_shadow">Drop shadow</option>
+              <option value="raised">Raised</option>
+              <option value="depressed">Depressed</option>
+              <option value="outline">Outline</option>
+            </select>
+          </label>
+          <label class="field" for="position">
+            <span>Position</span>
+            <select id="position">
+              <option value="bottom">Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </label>
+        </div>
+
+        <details class="surface-controls" open>
+          <summary>Colour and layers</summary>
+          <div class="colour-grid">
+            <label class="colour-field" for="text-colour">
+              <span>Primary text</span>
+              <input id="text-colour" type="color">
+            </label>
+            <label class="colour-field" for="secondary-colour">
+              <span>Second line</span>
+              <input id="secondary-colour" type="color">
+            </label>
+            <label class="colour-field" for="background-colour">
+              <span>Backdrop</span>
+              <input id="background-colour" type="color">
+            </label>
+            <label class="colour-field" for="window-colour">
+              <span>Window</span>
+              <input id="window-colour" type="color">
+            </label>
+          </div>
+          <label class="range-field" for="text-opacity">
+            <span>Text opacity <output id="text-opacity-output">100%</output></span>
+            <input id="text-opacity" type="range" min="0" max="100" step="1">
+          </label>
+          <label class="range-field" for="background-opacity">
+            <span>Backdrop opacity <output id="background-output">76%</output></span>
+            <input id="background-opacity" type="range" min="0" max="100" step="1">
+          </label>
+          <label class="range-field" for="window-opacity">
+            <span>Window opacity <output id="window-opacity-output">0%</output></span>
+            <input id="window-opacity" type="range" min="0" max="100" step="1">
+          </label>
+        </details>
+
+        <details class="timing-controls">
+          <summary>Timing and cleanup</summary>
+          <label class="range-field" for="delay">
+            <span>Delay <output id="delay-output">0 ms</output></span>
+            <input id="delay" type="range" min="-2000" max="2000" step="100">
+          </label>
+          <label class="check-row">
+            <span><strong>Hide sound cues</strong><small>Remove lines such as [Music] and (Applause)</small></span>
+            <input id="hide-sound-cues" type="checkbox">
+            <i aria-hidden="true"></i>
+          </label>
+        </details>
+      </section>
+    </section>
+
+    <footer>
+      <p><strong>On-device.</strong> No account, analytics or subtitle uploads.</p>
+      <button id="reset" type="button">Reset</button>
+      <span id="save-status" role="status"></span>
+    </footer>
+  </main>
+  <script src="lib/state.js"></script>
+  <script src="lib/cues.js"></script>
+  <script src="lib/imports.js"></script>
+  <script src="lib/overlay.js"></script>
+  <script src="lib/popup-controller.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

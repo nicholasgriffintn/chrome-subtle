@@ -1,0 +1,65 @@
+:root {
+  --subtle-font-size: 34px;
+  --subtle-text-colour: #fffaf0;
+  --subtle-caption-background: rgba(11, 16, 19, 0.76);
+  --subtle-window-background: transparent;
+  --subtle-window-padding: 0.2em;
+  --subtle-edge-stroke: 3px rgba(0, 0, 0, 0.94);
+  --subtle-edge-shadow: none;
+  --subtle-font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  --subtle-font-variant: normal;
+  --subtle-offset: 12%;
+}
+
+:root[data-subtle-enabled] .ytp-caption-segment,
+:root[data-subtle-enabled] .player-timedtext-text-container span,
+:root[data-subtle-enabled] [data-uia="timed-text-container"] span {
+  color: var(--subtle-text-colour) !important;
+  background: var(--subtle-caption-background) !important;
+  box-shadow: 0 0 0 var(--subtle-window-padding) var(--subtle-window-background) !important;
+  font-family: var(--subtle-font-family) !important;
+  font-variant: var(--subtle-font-variant) !important;
+  font-size: var(--subtle-font-size) !important;
+  font-weight: 650 !important;
+  line-height: 1.24 !important;
+  letter-spacing: 0.005em !important;
+  -webkit-text-stroke: var(--subtle-edge-stroke) !important;
+  paint-order: stroke fill !important;
+  text-shadow: var(--subtle-edge-shadow) !important;
+  box-decoration-break: clone !important;
+}
+
+:root[data-subtle-enabled] .ytp-caption-window-container {
+  bottom: var(--subtle-offset) !important;
+}
+
+:root[data-subtle-enabled][data-subtle-mode="dual"] .ytp-caption-window-container {
+  bottom: var(--subtle-primary-offset) !important;
+}
+
+:root[data-subtle-enabled][data-subtle-position="top"] .ytp-caption-window-container {
+  top: var(--subtle-offset) !important;
+  bottom: auto !important;
+}
+
+:root[data-subtle-enabled] .player-timedtext {
+  bottom: var(--subtle-offset) !important;
+  pointer-events: none !important;
+}
+
+:root[data-subtle-enabled][data-subtle-mode="dual"] .player-timedtext {
+  bottom: var(--subtle-primary-offset) !important;
+}
+
+:root[data-subtle-enabled][data-subtle-position="top"] .player-timedtext {
+  top: var(--subtle-offset) !important;
+  bottom: auto !important;
+}
+
+#movie_player,
+#shorts-player,
+.html5-video-player,
+.watch-video,
+.VideoContainer {
+  isolation: isolate;
+}
