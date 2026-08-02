@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs><linearGradient id="bg" x1="0" y1="800" x2="1280" y2="0"><stop stop-color="#10181c"/><stop offset="1" stop-color="#22231d"/></linearGradient></defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <g fill="none" stroke="#344044" stroke-width="1" opacity=".6"><circle cx="1110" cy="40" r="170"/><circle cx="1110" cy="40" r="255"/><circle cx="1110" cy="40" r="340"/></g>
+  <rect x="68" y="74" width="390" height="682" rx="24" fill="#898f91" stroke="#b9bdbd" stroke-width="2"/>
+  <g fill="#20292d" font-family="Arial,sans-serif" text-anchor="middle"><text x="263" y="397" font-size="16" font-weight="700" letter-spacing="2">INSERT YOUTUBE SHORTS</text><text x="263" y="427" font-size="14" font-weight="600" letter-spacing="1">VERTICAL VIDEO SCREENSHOT</text></g>
+  <g transform="translate(558 54)"><rect width="42" height="42" rx="10" fill="#172125"/><path d="M10 13h22M7 22h28" stroke="#fffaf0" stroke-width="4" stroke-linecap="round"/><path d="M14 31h16" stroke="#f2b84b" stroke-width="4" stroke-linecap="round"/><circle cx="35" cy="6" r="3" fill="#86d8c1"/><text x="55" y="31" fill="#f4efe3" font-family="Georgia,serif" font-size="30" font-weight="700">subtle.</text></g>
+  <text x="558" y="190" fill="#86d8c1" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="2">YOUTUBE SHORTS</text>
+  <text x="558" y="252" fill="#f4efe3" font-family="Georgia,serif" font-size="50" font-weight="700"><tspan x="558">Captions that fit</tspan><tspan x="558" dy="56">the vertical frame.</tspan></text>
+  <text x="558" y="402" fill="#c7c2b8" font-family="Arial,sans-serif" font-size="18"><tspan x="558">Use a safer width, scale and height for Shorts,</tspan><tspan x="558" dy="29">with an independent look when you want one.</tspan></text>
+  <g font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#f4efe3"><circle cx="570" cy="514" r="12" fill="#24403e"/><path d="m565 514 4 4 7-9" fill="none" stroke="#86d8c1" stroke-width="2"/><text x="595" y="520">Separate Shorts profile</text><circle cx="570" cy="563" r="12" fill="#24403e"/><path d="m565 563 4 4 7-9" fill="none" stroke="#86d8c1" stroke-width="2"/><text x="595" y="569">Safer reading width</text><circle cx="570" cy="612" r="12" fill="#24403e"/><path d="m565 612 4 4 7-9" fill="none" stroke="#86d8c1" stroke-width="2"/><text x="595" y="618">Shorts-specific height</text></g>
+  <text x="1208" y="65" fill="#a7adad" font-family="Arial,sans-serif" font-size="12" text-anchor="end" letter-spacing="2">04 / 05</text>
+</svg>

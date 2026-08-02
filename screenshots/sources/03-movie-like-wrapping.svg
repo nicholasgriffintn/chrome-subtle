@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1280" y2="800"><stop stop-color="#10181c"/><stop offset="1" stop-color="#1d221f"/></linearGradient></defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <g fill="none" stroke="#344044" stroke-width="1" opacity=".6"><circle cx="1140" cy="55" r="170"/><circle cx="1140" cy="55" r="255"/><circle cx="1140" cy="55" r="340"/></g>
+  <g transform="translate(66 54)"><rect width="42" height="42" rx="10" fill="#172125"/><path d="M10 13h22M7 22h28" stroke="#fffaf0" stroke-width="4" stroke-linecap="round"/><path d="M14 31h16" stroke="#f2b84b" stroke-width="4" stroke-linecap="round"/><circle cx="35" cy="6" r="3" fill="#86d8c1"/><text x="55" y="31" fill="#f4efe3" font-family="Georgia,serif" font-size="30" font-weight="700">subtle.</text></g>
+  <text x="70" y="180" fill="#f2b84b" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="2">MOVIE-LIKE SUBTITLES</text>
+  <text x="70" y="240" fill="#f4efe3" font-family="Georgia,serif" font-size="46" font-weight="700"><tspan x="70">Long lines,</tspan><tspan x="70" dy="54">properly composed.</tspan></text>
+  <text x="70" y="390" fill="#c7c2b8" font-family="Arial,sans-serif" font-size="18"><tspan x="70">Long captions wrap into a readable centred</tspan><tspan x="70" dy="29">block instead of stretching edge to edge.</tspan></text>
+  <g font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#f4efe3"><circle cx="82" cy="500" r="12" fill="#443b26"/><path d="m77 500 4 4 7-9" fill="none" stroke="#f2b84b" stroke-width="2"/><text x="107" y="506">Readable maximum width</text><circle cx="82" cy="549" r="12" fill="#443b26"/><path d="m77 549 4 4 7-9" fill="none" stroke="#f2b84b" stroke-width="2"/><text x="107" y="555">Natural word wrapping</text><circle cx="82" cy="598" r="12" fill="#443b26"/><path d="m77 598 4 4 7-9" fill="none" stroke="#f2b84b" stroke-width="2"/><text x="107" y="604">Centred in fullscreen</text></g>
+  <rect x="575" y="162" width="655" height="430" rx="20" fill="#898f91" stroke="#b9bdbd" stroke-width="2"/>
+  <g fill="#20292d" font-family="Arial,sans-serif" text-anchor="middle"><text x="902.5" y="368" font-size="16" font-weight="700" letter-spacing="2">INSERT FULLSCREEN VIDEO SCREENSHOT</text><text x="902.5" y="398" font-size="14" font-weight="600" letter-spacing="1">MOVIE-LIKE WRAPPING ENABLED</text></g>
+  <text x="1208" y="65" fill="#a7adad" font-family="Arial,sans-serif" font-size="12" text-anchor="end" letter-spacing="2">03 / 05</text>
+</svg>

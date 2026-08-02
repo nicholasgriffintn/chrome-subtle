@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs><linearGradient id="bg" x1="0" y1="800" x2="1280" y2="0"><stop stop-color="#10181c"/><stop offset="1" stop-color="#22231d"/></linearGradient></defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <g fill="none" stroke="#344044" stroke-width="1" opacity=".6"><circle cx="1110" cy="40" r="170"/><circle cx="1110" cy="40" r="255"/><circle cx="1110" cy="40" r="340"/></g>
+  <g transform="translate(820 52)"><rect width="42" height="42" rx="10" fill="#172125"/><path d="M10 13h22M7 22h28" stroke="#fffaf0" stroke-width="4" stroke-linecap="round"/><path d="M14 31h16" stroke="#f2b84b" stroke-width="4" stroke-linecap="round"/><circle cx="35" cy="6" r="3" fill="#86d8c1"/><text x="55" y="31" fill="#f4efe3" font-family="Georgia,serif" font-size="30" font-weight="700">subtle.</text></g>
+  <rect x="46" y="276" width="730" height="450" rx="20" fill="#898f91" stroke="#b9bdbd" stroke-width="2"/>
+  <g fill="#20292d" font-family="Arial,sans-serif" text-anchor="middle"><text x="411" y="493" font-size="16" font-weight="700" letter-spacing="2">INSERT YOUTUBE + POPUP SCREENSHOT</text><text x="411" y="523" font-size="14" font-weight="600" letter-spacing="1">STYLE TAB · LIVE PREVIEW</text></g>
+  <text x="820" y="174" fill="#f2b84b" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="2">LIVE STYLING</text>
+  <text x="820" y="232" fill="#f4efe3" font-family="Georgia,serif" font-size="48" font-weight="700"><tspan x="820">Tune subtitles</tspan><tspan x="820" dy="54">while you watch.</tspan></text>
+  <text x="820" y="378" fill="#c7c2b8" font-family="Arial,sans-serif" font-size="18"><tspan x="820">Tune type, text, backdrop and window</tspan><tspan x="820" dy="29">layers while the preview stays visible.</tspan></text>
+  <g font-family="Arial,sans-serif" font-size="14" font-weight="700"><rect x="820" y="468" width="156" height="42" rx="21" fill="#1d282c" stroke="#3c484c"/><text x="898" y="494" fill="#f2b84b" text-anchor="middle">18 FONT CHOICES</text><rect x="990" y="468" width="132" height="42" rx="21" fill="#1d282c" stroke="#3c484c"/><text x="1056" y="494" fill="#86d8c1" text-anchor="middle">9 PRESETS</text></g>
+  <text x="1208" y="65" fill="#a7adad" font-family="Arial,sans-serif" font-size="12" text-anchor="end" letter-spacing="2">02 / 05</text>
+</svg>
