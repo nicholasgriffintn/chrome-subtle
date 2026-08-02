@@ -13,13 +13,21 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   const mainWorldScripts = registrations.filter((script) => script.world === "MAIN");
 
   assert.equal(manifest.version, "0.2.0");
-  assert.deepEqual(manifest.permissions, ["storage", "activeTab", "scripting"]);
+  assert.deepEqual(manifest.permissions, ["storage", "activeTab", "scripting", "sidePanel"]);
+  assert.equal(manifest.minimum_chrome_version, "120");
+  assert.equal(manifest.side_panel.default_path, "learn.html");
+  assert.equal(
+    manifest.content_security_policy.extension_pages,
+    "script-src 'self'; object-src 'self'; connect-src 'none'"
+  );
   assert.equal("host_permissions" in manifest, false);
   assert.equal("content_scripts" in manifest, false);
   assert.deepEqual(manifest.optional_host_permissions, access.all().flatMap((platform) => platform.origins));
   assert.ok(isolated.js.indexOf("lib/state.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.includes("lib/runtime-context.js"));
   assert.ok(isolated.js.indexOf("lib/cues.js") < isolated.js.indexOf("lib/native-caption-filters.js"));
+  assert.ok(isolated.js.indexOf("lib/cues.js") < isolated.js.indexOf("lib/transcript.js"));
+  assert.ok(isolated.js.indexOf("lib/transcript.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/native-caption-filters.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/native-caption-styles.js") < isolated.js.indexOf("lib/runtime.js"));
   assert.ok(isolated.js.indexOf("lib/runtime-context.js") < isolated.js.indexOf("lib/runtime.js"));
@@ -35,6 +43,42 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(registrations.some((script) => script.world === "ISOLATED" && script.matches.some((match) => match.includes("bbc.co.uk"))));
   assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
   assert.match(read("service-worker.js"), /unregisterContentScripts/);
+});
+
+test("the Learn side panel keeps Chrome AI optional, local and explicitly activated", () => {
+  const manifest = JSON.parse(read("manifest.json"));
+  const panel = read("learn.html");
+  const controller = read("lib/learn-controller.js");
+  const launcher = read("lib/learn-launcher.js");
+  const learning = read("lib/ai-learning.js");
+  const view = read("lib/learn-view.js");
+
+  assert.equal(manifest.minimum_chrome_version, "120");
+  assert.equal(manifest.permissions.includes("aiLanguageModelOriginTrial"), false);
+  assert.equal(manifest.permissions.includes("downloads"), false);
+  assert.match(panel, /Chrome[^<]*on-device AI/i);
+  assert.match(panel, /one-time model download/i);
+  assert.match(panel, /currently loaded timed caption track/i);
+  assert.match(panel, /id="translate-button"/);
+  assert.match(panel, /id="explain-button"/);
+  assert.match(panel, /id="summary-button"/);
+  assert.match(panel, /id="ask-button"/);
+  assert.match(panel, /id="caption-question"[^>]*maxlength="500"/);
+  assert.match(panel, /id="summary-length"/);
+  assert.match(panel, /id="summary-language"/);
+  assert.match(panel, /id="download-translation"/);
+  assert.match(panel, /id="download-explanation"/);
+  assert.match(panel, /id="download-summary"/);
+  assert.match(panel, /id="download-answer"/);
+  assert.ok(panel.indexOf("lib/ai-languages.js") < panel.indexOf("lib/ai-capabilities.js"));
+  assert.ok(panel.indexOf("lib/translation-batches.js") < panel.indexOf("lib/ai-learning.js"));
+  assert.ok(panel.indexOf("lib/transcript-retrieval.js") < panel.indexOf("lib/ai-learning.js"));
+  assert.ok(panel.indexOf("lib/learn-export.js") < panel.indexOf("lib/learn-controller.js"));
+  assert.match(launcher, /sidePanel[.]open/);
+  assert.match(controller, /addEventListener\("click", translate\)/);
+  assert.doesNotMatch(controller, /fetch\s*\(/);
+  assert.doesNotMatch(learning, /fetch\s*\(/);
+  assert.doesNotMatch(view, /innerHTML|insertAdjacentHTML/);
 });
 
 test("the page bridge has no extension API access and the content entry point only orchestrates", () => {
@@ -116,6 +160,7 @@ test("popup exposes dual mode, local import and privacy status", () => {
 
 test("popup organises parity controls into accessible main, style and custom tabs", () => {
   const popup = read("popup.html");
+  const popupCss = read("popup.css");
   const controller = read("lib/popup-controller.js");
   const presets = require("../lib/presets.js");
 
@@ -133,6 +178,8 @@ test("popup organises parity controls into accessible main, style and custom tab
   assert.match(popup, /id="text-align"/);
   assert.match(popup, /id="readability-mode"/);
   assert.match(popup, /id="custom-blocked-terms"/);
+  assert.doesNotMatch(popup, /surface-editor|settings-search|saved-look|settings-backup/);
+  assert.doesNotMatch(controller, /SubtleSavedLooks|SubtleSettingsSearch|SubtleSettingsBackup|SubtleRangeShortcuts/);
   assert.match(popup, /data-mode="single">Single</);
   assert.match(controller, /confirm\("Reset all settings and remove the imported subtitle file[?]"\)/);
   assert.match(controller, /finally\s*\{\s*elements[.]subtitleFile[.]value = "";/s);

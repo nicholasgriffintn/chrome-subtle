@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn with Subtle</title>
+  <link rel="stylesheet" href="learn.css">
+</head>
+<body>
+  <main class="learn-shell">
+    <header class="masthead">
+      <a class="brand" href="#learn-workspace" aria-label="Subtle Learn, skip to tools">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span>
+          <strong>subtle<span>.</span></strong>
+          <small>Learn from the line</small>
+        </span>
+      </a>
+      <span class="device-badge"><i aria-hidden="true"></i> On-device</span>
+    </header>
+
+    <section class="intro" aria-labelledby="learn-title">
+      <span class="folio" aria-hidden="true">01 / Study</span>
+      <p class="eyebrow">The words behind the frame</p>
+      <h1 id="learn-title">Turn captions into <em>understanding.</em></h1>
+      <p>Translate a timed track, unpack the current line, ask questions, or make a scene-by-scene summary without sending captions to a cloud service.</p>
+    </section>
+
+    <section class="context-panel" aria-labelledby="context-heading">
+      <div class="section-heading context-heading">
+        <div>
+          <p class="eyebrow">Watching now</p>
+          <h2 id="context-heading"><span id="context-platform">Checking this tab…</span></h2>
+        </div>
+        <button id="refresh-context" class="icon-button" type="button" aria-label="Refresh video and transcript context" title="Refresh context">
+          <span aria-hidden="true">&#8635;</span>
+        </button>
+      </div>
+      <div class="context-state">
+        <span class="status-orbit" aria-hidden="true"><i></i></span>
+        <div>
+          <strong id="context-status" role="status" aria-live="polite">Looking for timed captions</strong>
+          <p id="context-detail">Open a supported video with captions, then refresh.</p>
+        </div>
+      </div>
+      <p class="coverage-note">Learn uses the currently loaded timed caption track. It may not be the native track or cover the full programme.</p>
+    </section>
+
+    <section class="capability-strip" aria-labelledby="capability-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Chrome AI</p>
+          <h2 id="capability-heading">Model readiness</h2>
+        </div>
+      </div>
+      <dl class="capability-list">
+        <div>
+          <dt>Translator</dt>
+          <dd id="capability-translator" data-state="checking">Checking…</dd>
+        </div>
+        <div>
+          <dt>Prompt model</dt>
+          <dd id="capability-explainer" data-state="checking">Checking…</dd>
+        </div>
+        <div>
+          <dt>Summariser</dt>
+          <dd id="capability-summarizer" data-state="checking">Checking…</dd>
+        </div>
+      </dl>
+      <p class="model-note">These features use Chrome's on-device AI. The first use can require a one-time model download. There is no cloud fallback. AI output can be wrong, so check important details against the captions.</p>
+    </section>
+
+    <div id="learn-workspace" class="tool-stack">
+      <section class="tool-card translate-card" aria-labelledby="translate-heading">
+        <span class="tool-number" aria-hidden="true">01</span>
+        <div class="tool-copy">
+          <p class="eyebrow">Loaded timed track</p>
+          <h2 id="translate-heading">Translate the captions</h2>
+          <p>Create a translated track and show it as Subtle's second line.</p>
+        </div>
+        <label class="field" for="target-language">
+          <span>Translate into</span>
+          <select id="target-language">
+            <option value="es">Spanish</option>
+          </select>
+        </label>
+        <button id="translate-button" class="primary-button" type="button" disabled>Translate track</button>
+        <div class="result-frame translation-frame">
+          <div id="translation-result" class="result-content" aria-live="polite" hidden></div>
+          <div class="result-actions">
+            <button id="download-translation" class="text-button" type="button" hidden>Download SRT</button>
+            <button id="clear-translation" class="text-button" type="button" hidden>Clear translated track</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool-card" aria-labelledby="explain-heading">
+        <span class="tool-number" aria-hidden="true">02</span>
+        <div class="tool-copy">
+          <p class="eyebrow">Current caption</p>
+          <h2 id="explain-heading">Explain this line</h2>
+          <p>Pause on a caption to explore its meaning, grammar, and useful vocabulary.</p>
+        </div>
+        <button id="explain-button" class="secondary-button" type="button" disabled>Explain current line</button>
+        <div class="result-frame">
+          <div id="explanation-result" class="result-content" aria-live="polite" hidden></div>
+          <div class="result-actions">
+            <button id="download-explanation" class="text-button" type="button" hidden>Download note</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool-card" aria-labelledby="summary-heading">
+        <span class="tool-number" aria-hidden="true">03</span>
+        <div class="tool-copy">
+          <p class="eyebrow">Scene by scene</p>
+          <h2 id="summary-heading">Summarise the track</h2>
+          <p>Make a navigable overview. Each timestamp returns to that moment in the video.</p>
+        </div>
+        <div class="field-pair">
+          <label class="field" for="summary-length">
+            <span>Detail</span>
+            <select id="summary-length">
+              <option value="short">Brief</option>
+              <option value="medium" selected>Standard</option>
+              <option value="long">Detailed</option>
+            </select>
+          </label>
+          <label class="field" for="summary-language">
+            <span>Write in</span>
+            <select id="summary-language">
+              <option value="en">English</option>
+              <option value="source">Caption language</option>
+            </select>
+          </label>
+        </div>
+        <button id="summary-button" class="secondary-button" type="button" disabled>Build summary</button>
+        <div class="result-frame">
+          <div id="summary-result" class="summary-results" aria-live="polite" hidden></div>
+          <div class="result-actions">
+            <button id="download-summary" class="text-button" type="button" hidden>Download summary</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool-card" aria-labelledby="question-heading">
+        <span class="tool-number" aria-hidden="true">04</span>
+        <div class="tool-copy">
+          <p class="eyebrow">Grounded in captions</p>
+          <h2 id="question-heading">Ask the track</h2>
+          <p>Ask about a person, event, phrase, or detail. Answers use a small set of relevant caption excerpts and link back to their source moments.</p>
+        </div>
+        <label class="field" for="caption-question">
+          <span>Your question</span>
+          <textarea id="caption-question" rows="3" maxlength="500" placeholder="What did Mina discover?"></textarea>
+        </label>
+        <button id="ask-button" class="secondary-button" type="button" disabled>Ask the captions</button>
+        <div class="result-frame">
+          <div id="answer-result" class="answer-result" aria-live="polite" hidden></div>
+          <div class="result-actions">
+            <button id="download-answer" class="text-button" type="button" hidden>Download answer</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="operation-region" class="operation-region" role="status" aria-live="polite" aria-atomic="true" hidden>
+      <div class="operation-copy">
+        <span class="pulse" aria-hidden="true"></span>
+        <strong id="operation-label">Preparing Chrome AI…</strong>
+        <button id="cancel-operation" class="text-button" type="button">Cancel</button>
+      </div>
+      <progress id="operation-progress" max="1" aria-label="Operation progress"></progress>
+    </section>
+
+    <aside id="bbc-note" class="bbc-note" aria-labelledby="bbc-heading" hidden>
+      <span aria-hidden="true">BBC</span>
+      <div>
+        <h2 id="bbc-heading">A note for iPlayer</h2>
+        <p>BBC iPlayer does not expose a complete timed transcript. Import an SRT or VTT file in Subtle before using Learn.</p>
+      </div>
+    </aside>
+
+    <footer>
+      <p><strong>Private by design.</strong> Captions and AI work stay on this device.</p>
+    </footer>
+  </main>
+
+  <script src="lib/ai-languages.js"></script>
+  <script src="lib/transcript.js"></script>
+  <script src="lib/ai-capabilities.js"></script>
+  <script src="lib/translation-batches.js"></script>
+  <script src="lib/transcript-retrieval.js"></script>
+  <script src="lib/ai-learning.js"></script>
+  <script src="lib/learn-export.js"></script>
+  <script src="lib/learn-tab-client.js"></script>
+  <script src="lib/learn-view.js"></script>
+  <script src="lib/learn-controller.js"></script>
+  <script src="learn.js"></script>
+</body>
+</html>

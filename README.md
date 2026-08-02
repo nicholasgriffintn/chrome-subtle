@@ -16,6 +16,8 @@ Subtle makes captions easier to read on YouTube, Netflix, BBC iPlayer, Disney+ a
 - Style Prime Video captions and add a second language supplied by the title's timed-text tracks.
 - Preserve BBC iPlayer's programme and speaker colours while changing typography, edges and caption surfaces.
 - Add a local SRT or VTT second line on any supported service.
+- Open the optional Learn side panel to translate the currently loaded timed track, explain the current caption, ask caption-grounded questions with source timestamps, or build a configurable timestamped summary using Chrome's on-device AI.
+- Export translated captions as SRT and explanations or summaries as Markdown without granting download access to the extension.
 - Keep the second line attached to the complete native caption group as Netflix moves dialogue around the frame.
 - Shift imported captions forwards or backwards to correct timing.
 - Filter sound descriptions, music cues, speaker labels and custom literal words or phrases when requested.
@@ -40,13 +42,20 @@ Subtle processes the current playback time, native caption elements and the capt
 
 When the popup opens on a supported page, it may capture one low-quality image of the visible tab for the local style preview. The image remains in popup memory only and is discarded when the popup closes; it is never stored or transmitted by Subtle.
 
-Subtle has no accounts, analytics, advertising, remote scripts or translation service. Imported files are not uploaded. Site access is optional: Subtle requests the current supported service only when you select its enable button, and removes its registered scripts if that access is revoked. `activeTab` identifies the service opened with the toolbar button, `scripting` registers its local bridge and runtime, and `storage` keeps settings on-device.
+Subtle has no accounts, analytics, advertising, remote scripts or external translation service. Imported files are not uploaded. Learn uses only Chrome's built-in on-device AI APIs, with no cloud fallback; its transcript snapshots and results remain in memory. AI work starts only when you select a Learn action and can be cancelled. The first use of a feature may ask Chrome to download a model.
+
+Site access is optional: Subtle requests the current supported service only when you select its enable button, and removes its registered scripts if that access is revoked. `activeTab` identifies the service opened with the toolbar button, `scripting` registers its local bridge and runtime, `storage` keeps settings on-device, and `sidePanel` hosts the optional Learn workspace beside the current tab.
 
 Platform caption requests stay between the active tab and the selected video service's infrastructure. Subtle does not send caption data to its own server or to an external translation provider. This privacy statement was last updated on 2 August 2026.
 
 ## Limitations
 
 - Picture in Picture mode does not display subtitles. This is a limitation of the browser's implementation.
+- Core caption styling requires Chrome 120 or newer. Learn additionally requires compatible Chrome 138+ on-device AI APIs, hardware and model availability; individual tools may remain unavailable.
+- Learn processes the currently loaded timed track. This may be a selected second-line track rather than the native captions, and it may not cover the full programme.
+- BBC iPlayer requires an imported SRT or VTT file before Learn can build a timed transcript.
+- Caption explanations and summaries currently accept English, Japanese, Spanish, German and French source captions. Translation uses Chrome's broader stable language-pair matrix and remains subject to local model availability.
+- On-device AI output can be incomplete or wrong. Check translations, explanations and summaries against the original captions.
 - YouTube second-language availability depends on the caption tracks supplied with each video.
 - Netflix second-language availability depends on the tracks packaged with each title; Subtle does not machine-translate Netflix captions.
 - Disney+ second-language availability depends on the HLS WebVTT tracks packaged with each title; forced-only and image-based tracks are not used.
@@ -68,6 +77,8 @@ Supported-site identity and origin configuration are centralised in `lib/support
 The YouTube page bridge passively captures the player's proof-bearing timed-text request because tokenless URLs from player metadata return empty responses. The Netflix page bridge requests all title tracks and captures bounded track metadata from the player manifest. The Disney+ bridge captures the master HLS manifest and assembles a selected segmented WebVTT track. The Prime Video bridge observes `GetVodPlaybackResources` and `playerChromeResources`, then loads the selected WebVTT or TTML track. Track URLs never cross into settings or storage. Player adapters traverse open BBC and Disney+ shadow roots while the renderer follows the union of visible native caption boxes.
 
 The proof-token approach was informed by the MIT-licensed [yt-dual-subs](https://github.com/gythiro/yt-dual-subs) implementation. Subtle uses its own smaller bridge and keeps parsing and rendering in isolated extension modules.
+
+Learn runs model work in Chrome's persistent side-panel document and passes only bounded, normalised transcript snapshots from the active tab. Every operation is pinned to the tab, platform and exact timed-track fingerprint, so results are rejected if the video or caption source changes. Translation batches use reversible cue markers and fall back to individual lines if Chrome changes their structure, preserving exact timings while avoiding unnecessary model calls. Question answering retrieves bounded caption neighbourhoods locally and resolves model citation IDs to trusted cue timestamps. Summary and answer timestamps come deterministically from cue ranges outside the model, and no operation falls back to a remote service.
 
 ```sh
 pnpm check

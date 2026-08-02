@@ -5,6 +5,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 const SubtleCues = require("../lib/cues.js");
 const SubtleState = require("../lib/state.js");
+const SubtleTranscript = require("../lib/transcript.js");
 
 const runtimeSource = fs.readFileSync(path.resolve(__dirname, "../lib/runtime.js"), "utf8");
 
@@ -71,6 +72,102 @@ test("YouTube caption mutations reclassify invisible layout segments", async () 
   assert.equal(harness.layoutSegmentSyncs(), initialSyncs + 1);
 });
 
+test("the Learn panel receives a bounded transcript tied to the current content", async () => {
+  const harness = createHarness({ playingWithCues: true });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+
+  const response = await harness.sendRuntimeMessage({ type: "GET_SUBTLE_TRANSCRIPT" });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.contentKey, "video-1");
+  assert.equal(response.playbackTime, 1.5);
+  assert.equal(response.aiTranslationActive, false);
+  assert.equal(response.coverage, "loaded_track");
+  assert.equal(response.identity.platformId, "youtube");
+  assert.equal(response.identity.contentKey, "video-1");
+  assert.match(response.identity.transcriptFingerprint, /^v1-/);
+  assert.deepEqual(JSON.parse(JSON.stringify(response.snapshot.cues)), [
+    { start: 1, end: 3, text: "Visible caption" }
+  ]);
+});
+
+test("stale-result checks use a lightweight playback context instead of resending captions", async () => {
+  const harness = createHarness({ playingWithCues: true });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+
+  const response = await harness.sendRuntimeMessage({ type: "GET_SUBTLE_LEARN_CONTEXT" });
+
+  assert.deepEqual(JSON.parse(JSON.stringify(response)), {
+    ok: true,
+    contentKey: "video-1",
+    platformId: "youtube",
+    identity: SubtleTranscript.identityFor({
+      contentKey: "video-1",
+      platformId: "youtube",
+      languageCode: "und",
+      cues: [{ start: 1, end: 3, text: "Visible caption" }]
+    }),
+    playbackTime: 1.5,
+    cueCount: 1,
+    aiTranslationActive: false
+  });
+  assert.equal("snapshot" in response, false);
+});
+
+test("translated captions apply only to the content they were generated from", async () => {
+  const harness = createHarness({ playingWithCues: true });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+  const source = await harness.sendRuntimeMessage({ type: "GET_SUBTLE_TRANSCRIPT" });
+
+  const stale = await harness.sendRuntimeMessage({
+    type: "APPLY_SUBTLE_AI_TRANSLATION",
+    sourceIdentity: { ...source.identity, transcriptFingerprint: "v1-stale-track" },
+    snapshot: {
+      contentKey: "video-1",
+      platformId: "youtube",
+      languageCode: "es",
+      cues: [{ start: 1, end: 3, text: "Texto obsoleto" }]
+    }
+  });
+  const applied = await harness.sendRuntimeMessage({
+    type: "APPLY_SUBTLE_AI_TRANSLATION",
+    sourceIdentity: source.identity,
+    snapshot: {
+      contentKey: "video-1",
+      platformId: "youtube",
+      languageCode: "es",
+      cues: [{ start: 1, end: 3, text: "Texto traducido" }]
+    }
+  });
+
+  assert.equal(stale.ok, false);
+  assert.equal(applied.ok, true);
+  assert.equal(harness.lastOverlayText(), "Texto traducido");
+});
+
+test("Learn timestamps seek only within the current content", async () => {
+  const harness = createHarness({ playingWithCues: true });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+  const source = await harness.sendRuntimeMessage({ type: "GET_SUBTLE_TRANSCRIPT" });
+
+  const response = await harness.sendRuntimeMessage({
+    type: "SEEK_SUBTLE_VIDEO",
+    sourceIdentity: source.identity,
+    seconds: 42.25
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(harness.video.currentTime, 42.25);
+});
+
 function createHarness(options = {}) {
   const listeners = new Map();
   const timers = [];
@@ -82,6 +179,7 @@ function createHarness(options = {}) {
   let overlayRenders = 0;
   let layoutSegmentSyncs = 0;
   let lastOverlayText;
+  let runtimeMessageListener;
   let now = 0;
   const player = { isConnected: true };
   const video = {
@@ -134,6 +232,7 @@ function createHarness(options = {}) {
     ResizeObserver: FakeResizeObserver,
     SubtleState,
     SubtleCues,
+    SubtleTranscript,
     SubtleNativeCaptionFilters: { create: () => ({ apply() {}, clear() {} }) },
     SubtleNativeCaptionStyles: {
       apply(_platformId, roots) { styledRootGroups.push(roots); },
@@ -186,7 +285,13 @@ function createHarness(options = {}) {
         local: { async get() { return { [SubtleState.STORAGE_KEY]: storedState }; } },
         onChanged: { addListener() {}, removeListener() {} }
       },
-      runtime: { id: "runtime", onMessage: { addListener() {}, removeListener() {} } }
+      runtime: {
+        id: "runtime",
+        onMessage: {
+          addListener(listener) { runtimeMessageListener = listener; },
+          removeListener() {}
+        }
+      }
     },
     document,
     window: { addEventListener() {} },
@@ -211,11 +316,18 @@ function createHarness(options = {}) {
     layoutMeasurements: () => layoutMeasurements,
     overlayRenders: () => overlayRenders,
     layoutSegmentSyncs: () => layoutSegmentSyncs,
+    lastOverlayText: () => lastOverlayText,
     runFrame(timestamp) {
       now = timestamp;
       const callback = animationFrames.shift();
       assert.ok(callback, "expected a scheduled animation frame");
       callback(timestamp);
+    },
+    async sendRuntimeMessage(message) {
+      return new Promise((resolve, reject) => {
+        const returned = runtimeMessageListener?.(message, {}, resolve);
+        if (returned !== true) setImmediate(() => reject(new Error("Runtime did not accept the asynchronous message.")));
+      });
     }
   };
 }
