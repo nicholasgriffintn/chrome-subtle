@@ -75,3 +75,27 @@ test("Disney caption styles are installed in the player shadow root", () => {
   assert.match(styles[0].textContent, /line-height: var\(--subtle-native-line-height\)/);
   assert.equal(attributes.has("data-subtle-disney-enabled"), true);
 });
+
+test("YouTube layout-only segments are marked so they cannot render empty caption boxes", () => {
+  const invisible = captionSegment("\u200b \u200b");
+  const visible = captionSegment("All");
+
+  NativeCaptionStyles.syncYouTubeSegments([invisible, visible]);
+
+  assert.equal(invisible.classes.has("subtle-layout-caption-segment"), true);
+  assert.equal(visible.classes.has("subtle-layout-caption-segment"), false);
+});
+
+function captionSegment(textContent) {
+  const classes = new Set();
+  return {
+    textContent,
+    classes,
+    classList: {
+      toggle(name, enabled) {
+        if (enabled) classes.add(name);
+        else classes.delete(name);
+      }
+    }
+  };
+}

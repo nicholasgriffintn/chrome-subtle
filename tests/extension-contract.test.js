@@ -67,6 +67,14 @@ test("the page bridge has no extension API access and the content entry point on
   assert.ok(read("popup.js").split("\n").length < 10);
 });
 
+test("YouTube invisible layout segments cannot inherit visible caption decoration", () => {
+  const styles = read("content.css");
+  assert.match(
+    styles,
+    /[.]ytp-caption-segment[.]subtle-layout-caption-segment\s*\{[^}]*background:\s*transparent[^}]*box-shadow:\s*none[^}]*padding:\s*0/s
+  );
+});
+
 test("popup exposes dual mode, local import and privacy status", () => {
   const popup = read("popup.html");
   const popupCss = read("popup.css");

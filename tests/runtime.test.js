@@ -59,6 +59,18 @@ test("the runtime observes and styles discovered player shadow roots", async () 
   assert.ok(harness.styledRootGroups.some((roots) => roots.includes(shadowRoot)));
 });
 
+test("YouTube caption mutations reclassify invisible layout segments", async () => {
+  const harness = createHarness({ captionMutation: true });
+  vm.runInContext(runtimeSource, harness.context);
+  harness.context.SubtleRuntime.start();
+  await settlePromises();
+  const initialSyncs = harness.layoutSegmentSyncs();
+
+  harness.observer.callback([{ target: {}, addedNodes: [{}], removedNodes: [] }]);
+
+  assert.equal(harness.layoutSegmentSyncs(), initialSyncs + 1);
+});
+
 function createHarness(options = {}) {
   const listeners = new Map();
   const timers = [];
@@ -68,6 +80,7 @@ function createHarness(options = {}) {
   let videoMutationChecks = 0;
   let layoutMeasurements = 0;
   let overlayRenders = 0;
+  let layoutSegmentSyncs = 0;
   let lastOverlayText;
   let now = 0;
   const player = { isConnected: true };
@@ -124,6 +137,7 @@ function createHarness(options = {}) {
     SubtleNativeCaptionFilters: { create: () => ({ apply() {}, clear() {} }) },
     SubtleNativeCaptionStyles: {
       apply(_platformId, roots) { styledRootGroups.push(roots); },
+      syncYouTubeSegments() { layoutSegmentSyncs += 1; },
       clear() {}
     },
     SubtitleAdapters: {
@@ -131,7 +145,7 @@ function createHarness(options = {}) {
       findVideo: () => video,
       findPlayer: () => player,
       mutationsContainVideo() { videoMutationChecks += 1; return false; },
-      mutationsContainNativeCaptions: () => false,
+      mutationsContainNativeCaptions: () => Boolean(options.captionMutation),
       nativeCaptionElements: () => [],
       measureNativeCaption() {
         layoutMeasurements += 1;
@@ -196,6 +210,7 @@ function createHarness(options = {}) {
     videoMutationChecks: () => videoMutationChecks,
     layoutMeasurements: () => layoutMeasurements,
     overlayRenders: () => overlayRenders,
+    layoutSegmentSyncs: () => layoutSegmentSyncs,
     runFrame(timestamp) {
       now = timestamp;
       const callback = animationFrames.shift();

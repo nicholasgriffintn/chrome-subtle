@@ -52,6 +52,17 @@
   background: transparent !important;
 }
 
+:root[data-subtle-enabled] .ytp-caption-segment.subtle-layout-caption-segment {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-text-stroke: 0 transparent !important;
+  text-shadow: none !important;
+}
+
 :root[data-subtle-enabled][data-subtle-movie-like="true"] .atvwebplayersdk-captions-text {
   display: inline-block !important;
   width: max-content !important;

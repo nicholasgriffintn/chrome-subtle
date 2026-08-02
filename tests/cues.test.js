@@ -28,6 +28,28 @@ test("YouTube JSON3 segments become searchable cues", () => {
   assert.equal(SubtleCues.isSoundCue(cues[1].text), true);
 });
 
+test("YouTube authored captions discard invisible layout markers and duplicate render events", () => {
+  const event = {
+    tStartMs: 20_267,
+    dDurationMs: 1_400,
+    segs: [
+      { utf8: "\u200b" },
+      { utf8: "\u200b" },
+      { utf8: "\u200b \u200bAll right, last one down's \u200b \u200b" },
+      { utf8: "\n" },
+      { utf8: "\u200b \u200b" },
+      { utf8: "a rotten egg.\u200b \u200b" }
+    ]
+  };
+
+  const cues = SubtleCues.parseYouTubeJson({ events: [event, { ...event }] });
+
+  assert.equal(cues.length, 1);
+  assert.equal(cues[0].start, 20.267);
+  assert.ok(Math.abs(cues[0].end - 21.667) < 0.000_001);
+  assert.equal(cues[0].text, "All right, last one down's\na rotten egg.");
+});
+
 test("overlapping YouTube cues prefer the latest rolling-caption update", () => {
   const cues = [
     { start: 10, end: 16, text: "this card, this card is" },
