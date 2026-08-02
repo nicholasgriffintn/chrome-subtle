@@ -26,8 +26,11 @@ async function syncRegistrations() {
   const wanted = [];
 
   for (const platform of SubtleSiteAccess.all()) {
-    const granted = await chrome.permissions.contains(SubtleSiteAccess.permissionFor(platform));
-    if (granted) wanted.push(...SubtleSiteAccess.registrationsFor(platform));
+    const checks = await Promise.all(platform.origins.map(async (origin) => (
+      await chrome.permissions.contains({ origins: [origin] }) ? origin : null
+    )));
+    const grantedOrigins = checks.filter(Boolean);
+    wanted.push(...SubtleSiteAccess.registrationsFor(platform, grantedOrigins));
   }
 
   const wantedIds = new Set(wanted.map((script) => script.id));

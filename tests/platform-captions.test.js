@@ -7,8 +7,9 @@ test("supported sites expose caption providers through one stable interface", ()
   const netflix = PlatformCaptions.forPlatform("netflix");
   const bbc = PlatformCaptions.forPlatform("bbc");
   const disney = PlatformCaptions.forPlatform("disney");
+  const prime = PlatformCaptions.forPlatform("prime");
 
-  for (const provider of [youtube, netflix, bbc, disney]) {
+  for (const provider of [youtube, netflix, bbc, disney, prime]) {
     assert.equal(typeof provider.contentKey, "function");
     assert.equal(typeof provider.tracksFromEvent, "function");
     assert.equal(typeof provider.selectTrack, "function");
@@ -18,6 +19,58 @@ test("supported sites expose caption providers through one stable interface", ()
   assert.equal(PlatformCaptions.forPlatform("unsupported"), null);
   assert.equal(bbc.contentKey({ pathname: "/iplayer/episode/p0gd2b0j/example" }), "p0gd2b0j");
   assert.equal(disney.contentKey({ pathname: "/en-gb/play/14ca4815-0611-45d5-948c-d911d78efcf2" }), "14ca4815-0611-45d5-948c-d911d78efcf2");
+  assert.equal(prime.contentKey({ pathname: "/gp/video/detail/B0GWM2TV7P" }), "B0GWM2TV7P");
+  assert.equal(prime.contentKey({ pathname: "/region/eu/detail/0ABCDEF1234567890/example" }), "0ABCDEF1234567890");
+});
+
+test("Prime tracks remain opaque, prefer full subtitles and parse TTML through the page bridge", async () => {
+  const provider = PlatformCaptions.forPlatform("prime");
+  const tracks = provider.tracksFromEvent({
+    pageContentKey: "B0GWM2TV7P",
+    tracks: [
+      {
+        id: "prime-track-1",
+        contentId: "amzn1.dv.gti.episode",
+        languageCode: "en-GB",
+        label: "English",
+        isCaption: false,
+        isForced: true,
+        format: "ttml",
+        url: "https://should-not-cross.example/forced.xml"
+      },
+      {
+        id: "prime-track-2",
+        contentId: "amzn1.dv.gti.episode",
+        languageCode: "en-GB",
+        label: "English [CC]",
+        isCaption: true,
+        isForced: false,
+        format: "ttml",
+        url: "https://should-not-cross.example/full.xml"
+      }
+    ]
+  }, { pathname: "/gp/video/detail/B0GWM2TV7P" });
+
+  assert.equal(tracks.length, 2);
+  assert.equal("url" in tracks[0], false);
+  assert.equal(provider.selectTrack(tracks, { targetLanguage: "en-gb" }).id, "prime-track-2");
+
+  const documentRef = eventDocument((event, document) => {
+    if (event.type !== "subtle:request-prime-track-content") return;
+    document.dispatchEvent({
+      type: "subtle:prime-track-content",
+      detail: {
+        requestId: event.detail.requestId,
+        format: "ttml",
+        text: '<tt><body><div><p begin="00:00:01.000" end="00:00:02.000">Prime line</p></div></body></tt>'
+      }
+    });
+  });
+  const cues = await provider.loadCues(tracks[1], {}, {
+    documentRef,
+    createEvent: (type, detail) => ({ type, detail })
+  });
+  assert.equal(cues[0].text, "Prime line");
 });
 
 test("Disney tracks remain opaque and selected content loads through its page bridge", async () => {

@@ -28,6 +28,7 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(mainWorldScripts.some((script) => script.js.includes("youtube-page-bridge.js") && script.matches.some((match) => match.includes("youtube"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("netflix-page-bridge.js") && script.matches.some((match) => match.includes("netflix"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("disney-page-bridge.js") && script.matches.some((match) => match.includes("disneyplus"))));
+  assert.ok(mainWorldScripts.some((script) => script.js.includes("prime-page-bridge.js") && script.matches.some((match) => match.includes("amazon.co.uk"))));
   assert.equal(mainWorldScripts.some((script) => script.matches.some((match) => match.includes("bbc.co.uk"))), false);
   assert.ok(registrations.some((script) => script.world === "ISOLATED" && script.matches.some((match) => match.includes("bbc.co.uk"))));
   assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
@@ -38,9 +39,11 @@ test("the page bridge has no extension API access and the content entry point on
   const bridge = read("youtube-page-bridge.js");
   const netflixBridge = read("netflix-page-bridge.js");
   const disneyBridge = read("disney-page-bridge.js");
+  const primeBridge = read("prime-page-bridge.js");
   assert.doesNotMatch(bridge, /chrome[.](storage|runtime|tabs)/);
   assert.doesNotMatch(netflixBridge, /chrome[.](storage|runtime|tabs)/);
   assert.doesNotMatch(disneyBridge, /chrome[.](storage|runtime|tabs)/);
+  assert.doesNotMatch(primeBridge, /chrome[.](storage|runtime|tabs)/);
   assert.match(bridge, /XMLHttpRequest/);
   assert.match(bridge, /PerformanceObserver/);
   assert.match(bridge, /globalThis[.]fetch/);
@@ -53,6 +56,9 @@ test("the page bridge has no extension API access and the content entry point on
   assert.match(netflixBridge, /CONTENT_REQUEST_EVENT/);
   assert.match(disneyBridge, /stream[?][.]sources/);
   assert.match(disneyBridge, /CONTENT_REQUEST_EVENT/);
+  assert.match(primeBridge, /GetVodPlaybackResources/);
+  assert.match(primeBridge, /subtitleUrls/);
+  assert.match(primeBridge, /CONTENT_REQUEST_EVENT/);
   assert.match(read("content.js"), /SubtleRuntime[.]start/);
   assert.ok(read("content.js").split("\n").length < 10);
   assert.match(read("popup.js"), /SubtlePopup[.]start/);
@@ -193,6 +199,14 @@ test("Netflix styling targets only the innermost caption span", () => {
   assert.match(css, /\[data-uia="timed-text-container"\] span:not\(:has\(\*\)\)/);
   assert.doesNotMatch(css, /[.]player-timedtext-text-container span,/);
   assert.doesNotMatch(css, /\[data-uia="timed-text-container"\] span\s*\{/);
+});
+
+test("Prime Video styling targets its stable caption class and clears only the redundant wrapper", () => {
+  const css = read("content.css");
+
+  assert.match(css, /[.]atvwebplayersdk-captions-text/);
+  assert.match(css, /[.]atvwebplayersdk-captions-overlay p > span:not\([.]atvwebplayersdk-captions-text\)/);
+  assert.match(css, /[.]atvwebplayersdk-captions-overlay p > span:not\([.]atvwebplayersdk-captions-text\)[^{]*\{[^}]*background:\s*transparent\s*!important/s);
 });
 
 test("BBC styling keeps site-provided speaker colours on caption leaves", () => {

@@ -67,11 +67,13 @@ test("secondary subtitle sources follow platform capabilities", () => {
   assert.deepEqual(SubtleState.availableSecondarySources("youtube"), ["platform", "upload"]);
   assert.deepEqual(SubtleState.availableSecondarySources("netflix"), ["platform", "upload"]);
   assert.deepEqual(SubtleState.availableSecondarySources("disney"), ["platform", "upload"]);
+  assert.deepEqual(SubtleState.availableSecondarySources("prime"), ["platform", "upload"]);
   assert.deepEqual(SubtleState.availableSecondarySources("bbc"), ["upload"]);
   assert.deepEqual(SubtleState.availableSecondarySources("unsupported"), ["upload"]);
   assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "youtube"), "platform");
   assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "netflix"), "platform");
   assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "disney"), "platform");
+  assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "prime"), "platform");
   assert.equal(SubtleState.effectiveSecondarySource(uploadPreference, "netflix"), "upload");
   assert.equal(SubtleState.effectiveSecondarySource(platformPreference, "bbc"), "upload");
 });

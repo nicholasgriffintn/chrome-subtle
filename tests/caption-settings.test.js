@@ -60,6 +60,18 @@ test("Disney settings wait for the title HLS caption tracks", () => {
   assert.match(view.note, /Start Disney\+ playback/);
 });
 
+test("Prime Video settings wait for the current title's timed-text tracks", () => {
+  const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), {
+    platformId: "prime",
+    sourceLabel: "Prime Video captions",
+    availableTracks: []
+  });
+
+  assert.equal(view.languageDisabled, true);
+  assert.equal(view.languageOptions[0].label, "Waiting for Prime Video captions…");
+  assert.match(view.note, /Start Prime Video playback/);
+});
+
 test("unsupported pages expose only the local file source", () => {
   const view = CaptionSettings.sourceView(SubtleState.createDefaultState(), null);
 

@@ -7,6 +7,9 @@ test("supported hostnames map to explicit site adapters", () => {
   assert.equal(SubtitleAdapters.forHostname("www.netflix.com").id, "netflix");
   assert.equal(SubtitleAdapters.forHostname("www.bbc.co.uk").id, "bbc");
   assert.equal(SubtitleAdapters.forHostname("www.disneyplus.com").id, "disney");
+  assert.equal(SubtitleAdapters.forHostname("www.amazon.co.uk").id, "prime");
+  assert.equal(SubtitleAdapters.forHostname("amazon.com.au").id, "prime");
+  assert.equal(SubtitleAdapters.forHostname("www.primevideo.com").id, "prime");
   assert.equal(SubtitleAdapters.forHostname("evil-youtube.com"), null);
 });
 
@@ -75,6 +78,27 @@ test("Netflix does not attach to disconnected or ended videos", () => {
     SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.netflix, { querySelectorAll: () => [disconnected, ended] }),
     null
   );
+});
+
+test("Prime Video matches the active web player and its rendered caption line", () => {
+  const player = { id: "prime-player" };
+  const video = videoCandidate({ paused: false, area: 1920 * 1080 });
+  video.closest = (selector) => selector.includes(".dv-web-player") ? player : null;
+  const caption = captionCandidate("Cuz everyone loves us to sing");
+  const leaf = captionCandidate("Cuz everyone loves us to sing");
+  const root = {
+    querySelectorAll(selector) {
+      if (selector.includes("video")) return [video];
+      if (selector === ".atvwebplayersdk-captions-text") return [caption];
+      if (selector.includes("span:not(:has(*))")) return [leaf];
+      return [];
+    }
+  };
+
+  assert.equal(SubtitleAdapters.findVideo(SubtitleAdapters.ADAPTERS.prime, root), video);
+  assert.equal(SubtitleAdapters.findPlayer(SubtitleAdapters.ADAPTERS.prime, root, { video }), player);
+  assert.equal(SubtitleAdapters.findNativeCaption(SubtitleAdapters.ADAPTERS.prime, root, { player }), caption);
+  assert.deepEqual(SubtitleAdapters.nativeCaptionElements(SubtitleAdapters.ADAPTERS.prime, root, { player }), [leaf]);
 });
 
 test("BBC iPlayer matches its playback video and shared caption host", () => {

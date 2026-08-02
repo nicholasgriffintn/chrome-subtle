@@ -21,13 +21,15 @@
 
 :root[data-subtle-enabled] .ytp-caption-segment,
 :root[data-subtle-enabled] .player-timedtext-text-container span:not(:has(*)),
-:root[data-subtle-enabled] [data-uia="timed-text-container"] span:not(:has(*)) {
+:root[data-subtle-enabled] [data-uia="timed-text-container"] span:not(:has(*)),
+:root[data-subtle-enabled] .atvwebplayersdk-captions-text {
   color: var(--subtle-text-colour) !important;
 }
 
 :root[data-subtle-enabled] .ytp-caption-segment,
 :root[data-subtle-enabled] .player-timedtext-text-container span:not(:has(*)),
-:root[data-subtle-enabled] [data-uia="timed-text-container"] span:not(:has(*)) {
+:root[data-subtle-enabled] [data-uia="timed-text-container"] span:not(:has(*)),
+:root[data-subtle-enabled] .atvwebplayersdk-captions-text {
   background: var(--subtle-caption-background) !important;
   box-shadow: 0 0 0 var(--subtle-window-padding) var(--subtle-window-background) !important;
   font-family: var(--subtle-font-family) !important;
@@ -44,6 +46,10 @@
   paint-order: stroke fill !important;
   text-shadow: var(--subtle-edge-shadow) !important;
   box-decoration-break: clone !important;
+}
+
+:root[data-subtle-enabled] .atvwebplayersdk-captions-overlay p > span:not(.atvwebplayersdk-captions-text) {
+  background: transparent !important;
 }
 
 :root[data-subtle-enabled] .player-timedtext {
@@ -94,6 +100,8 @@
 #shorts-player,
 .html5-video-player,
 .watch-video,
-.VideoContainer {
+.VideoContainer,
+.dv-web-player,
+.atvwebplayersdk-player-container {
   isolation: isolate;
 }
