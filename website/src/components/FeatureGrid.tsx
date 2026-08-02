@@ -2,19 +2,19 @@ const features = [
   {
     number: "01",
     title: "A caption studio, not a settings dump",
-    copy: "Tune type, text, backdrop and window layers independently, then choose an edge treatment, size and position with a live preview.",
+    copy: "Start with nine presets, then tune 18 fonts, colour, spacing, surfaces, alignment and position with a live preview.",
     accent: "amber"
   },
   {
     number: "02",
     title: "Learn a new language while you watch",
-    copy: "Use the platform's built-in translations or upload your own to show captions in multiple languages at the same time.",
+    copy: "Use a second track supplied by YouTube, Netflix, Disney+ or Prime Video—or add your own SRT or VTT file on any supported site.",
     accent: "mint"
   },
   {
     number: "03",
-    title: "Timing controls for imperfect files",
-    copy: "Nudge an imported track forwards or backwards without editing it. Optional cleanup hides bracketed sound cues when you want less visual noise.",
+    title: "Cleaner captions, shaped for the screen",
+    copy: "Wrap long lines into a movie-like block, optimise captions for Shorts, adjust timing and hide sound cues, music, speaker labels or custom phrases.",
     accent: "paper"
   }
 ];

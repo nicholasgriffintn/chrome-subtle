@@ -1,26 +1,41 @@
+const platforms = [
+  {
+    name: "YouTube",
+    detail: "Native styling, translated second lines, local files, movie-like wrapping and Shorts controls."
+  },
+  {
+    name: "Netflix",
+    detail: "Native styling, title-language second lines and local files while retaining authored placement."
+  },
+  {
+    name: "BBC iPlayer",
+    detail: "Native styling and local files, with programme and speaker colours preserved."
+  },
+  {
+    name: "Disney+",
+    detail: "Native styling, title-language second lines and local files."
+  },
+  {
+    name: "Prime Video",
+    detail: "Native styling, title-language second lines and local files across regional Prime sites."
+  }
+];
+
 export function Compatibility() {
   return (
     <section className="compatibility section" id="how-it-works" aria-labelledby="compatibility-title">
       <div className="compatibility-copy">
         <h2 id="compatibility-title">Designed around each player.</h2>
+        <p>Subtle adapts to the captions and language tracks each service actually provides.</p>
       </div>
-      <div className="platform-table" role="table" aria-label="Platform capabilities">
-        <div className="platform-row platform-head" role="row">
-          <span role="columnheader">Capability</span><span role="columnheader">YouTube</span><span role="columnheader">Netflix</span>
-        </div>
-        <PlatformRow label="Native caption styling" youtube="Included" netflix="Included" />
-        <PlatformRow label="Platform second line" youtube="Translation when available" netflix="Title languages when available" />
-        <PlatformRow label="Local SRT / VTT line" youtube="Included" netflix="Included" />
-        <PlatformRow label="Sent to third parties" youtube="None" netflix="None" />
-      </div>
+      <ul className="platform-list" aria-label="Supported video services">
+        {platforms.map((platform) => (
+          <li key={platform.name}>
+            <strong>{platform.name}</strong>
+            <p>{platform.detail}</p>
+          </li>
+        ))}
+      </ul>
     </section>
-  );
-}
-
-function PlatformRow({ label, youtube, netflix }: { label: string; youtube: string; netflix: string }) {
-  return (
-    <div className="platform-row" role="row">
-      <strong role="cell">{label}</strong><span role="cell">{youtube}</span><span role="cell">{netflix}</span>
-    </div>
   );
 }
