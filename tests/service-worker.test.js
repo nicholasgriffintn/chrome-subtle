@@ -24,6 +24,12 @@ test("registration sync keeps granted scripts current and removes revoked platfo
       storage: { local: { async get() { return { [State.STORAGE_KEY]: State.createDefaultState() }; }, async set() {} } },
       permissions: {
         async contains(permission) { return permission.origins.some((origin) => origin.includes("youtube")); },
+        async getAll() {
+          return {
+            origins: SiteAccess.forId("youtube").origins.slice(),
+            permissions: ["storage", "activeTab", "scripting"]
+          };
+        },
         onAdded: events.event("permissionsAdded"),
         onRemoved: events.event("permissionsRemoved")
       },

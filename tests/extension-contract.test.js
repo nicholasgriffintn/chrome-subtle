@@ -29,6 +29,8 @@ test("manifest keeps permissions narrow and loads reusable modules before orches
   assert.ok(mainWorldScripts.some((script) => script.js.includes("netflix-page-bridge.js") && script.matches.some((match) => match.includes("netflix"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("disney-page-bridge.js") && script.matches.some((match) => match.includes("disneyplus"))));
   assert.ok(mainWorldScripts.some((script) => script.js.includes("prime-page-bridge.js") && script.matches.some((match) => match.includes("amazon.co.uk"))));
+  const primeRegistration = mainWorldScripts.find((script) => script.js.includes("prime-page-bridge.js"));
+  assert.ok(primeRegistration.js.indexOf("lib/supported-sites.js") < primeRegistration.js.indexOf("prime-page-bridge.js"));
   assert.equal(mainWorldScripts.some((script) => script.matches.some((match) => match.includes("bbc.co.uk"))), false);
   assert.ok(registrations.some((script) => script.world === "ISOLATED" && script.matches.some((match) => match.includes("bbc.co.uk"))));
   assert.match(read("service-worker.js"), /permissions[.]onRemoved/);
@@ -70,6 +72,9 @@ test("popup exposes dual mode, local import and privacy status", () => {
   const popupCss = read("popup.css");
   const controller = read("lib/popup-controller.js");
   const settings = read("lib/caption-settings.js");
+  const popupScripts = Array.from(popup.matchAll(/<script src="([^"]+)"/g), (match) => match[1]);
+  assert.ok(popupScripts.includes("lib/supported-sites.js"));
+  assert.ok(popupScripts.indexOf("lib/supported-sites.js") < popupScripts.indexOf("lib/site-access.js"));
   assert.match(popup, /data-mode="dual"/);
   assert.match(popup, /accept="[^"]*[.]srt/);
   assert.match(popup, /No account, analytics or subtitle uploads/);
@@ -207,6 +212,8 @@ test("Prime Video styling targets its stable caption class and clears only the r
   assert.match(css, /[.]atvwebplayersdk-captions-text/);
   assert.match(css, /[.]atvwebplayersdk-captions-overlay p > span:not\([.]atvwebplayersdk-captions-text\)/);
   assert.match(css, /[.]atvwebplayersdk-captions-overlay p > span:not\([.]atvwebplayersdk-captions-text\)[^{]*\{[^}]*background:\s*transparent\s*!important/s);
+  assert.match(css, /data-subtle-movie-like="true"[^\{]*[.]atvwebplayersdk-captions-text/);
+  assert.match(css, /data-subtle-align="left"[^\{]*[.]atvwebplayersdk-captions-overlay p/);
 });
 
 test("BBC styling keeps site-provided speaker colours on caption leaves", () => {

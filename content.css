@@ -52,6 +52,25 @@
   background: transparent !important;
 }
 
+:root[data-subtle-enabled][data-subtle-movie-like="true"] .atvwebplayersdk-captions-text {
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: min(var(--subtle-movie-width), calc(100vw - 32px)) !important;
+  white-space: normal !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="left"] .atvwebplayersdk-captions-overlay p {
+  text-align: left !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="center"] .atvwebplayersdk-captions-overlay p {
+  text-align: center !important;
+}
+
+:root[data-subtle-enabled][data-subtle-align="right"] .atvwebplayersdk-captions-overlay p {
+  text-align: right !important;
+}
+
 :root[data-subtle-enabled] .player-timedtext {
   pointer-events: none !important;
 }

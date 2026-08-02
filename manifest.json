@@ -11,9 +11,12 @@
     "scripting"
   ],
   "optional_host_permissions": [
+    "https://youtube.com/*",
     "https://www.youtube.com/*",
     "https://www.youtube-nocookie.com/*",
+    "https://netflix.com/*",
     "https://www.netflix.com/*",
+    "https://bbc.co.uk/*",
     "https://www.bbc.co.uk/*",
     "https://disneyplus.com/*",
     "https://www.disneyplus.com/*",

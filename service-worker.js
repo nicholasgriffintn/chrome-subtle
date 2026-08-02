@@ -1,4 +1,4 @@
-importScripts("lib/state.js", "lib/site-access.js");
+importScripts("lib/state.js", "lib/supported-sites.js", "lib/site-access.js");
 
 let registrationSync = Promise.resolve();
 
@@ -23,13 +23,12 @@ function queueRegistrationSync() {
 async function syncRegistrations() {
   const registered = await chrome.scripting.getRegisteredContentScripts();
   const registeredIds = new Set(registered.map((script) => script.id));
+  const grantedPermissions = await chrome.permissions.getAll();
+  const grantedOriginSet = new Set(grantedPermissions.origins || []);
   const wanted = [];
 
   for (const platform of SubtleSiteAccess.all()) {
-    const checks = await Promise.all(platform.origins.map(async (origin) => (
-      await chrome.permissions.contains({ origins: [origin] }) ? origin : null
-    )));
-    const grantedOrigins = checks.filter(Boolean);
+    const grantedOrigins = platform.origins.filter((origin) => grantedOriginSet.has(origin));
     wanted.push(...SubtleSiteAccess.registrationsFor(platform, grantedOrigins));
   }
 

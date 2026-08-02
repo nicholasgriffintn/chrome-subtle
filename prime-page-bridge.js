@@ -16,12 +16,6 @@
     "ssl-images-amazon.com",
     "amazonaws.com"
   ]);
-  const PRIME_SERVICE_DOMAINS = Object.freeze([
-    "amazon.ae", "amazon.ca", "amazon.co.jp", "amazon.co.uk", "amazon.co.za", "amazon.com",
-    "amazon.com.au", "amazon.com.be", "amazon.com.br", "amazon.com.mx", "amazon.com.tr",
-    "amazon.de", "amazon.eg", "amazon.es", "amazon.fr", "amazon.ie", "amazon.in", "amazon.it",
-    "amazon.nl", "amazon.pl", "amazon.sa", "amazon.se", "amazon.sg", "primevideo.com"
-  ]);
   const playbacks = new Map();
   const cueCache = new Map();
 
@@ -211,9 +205,7 @@
     try {
       const url = new URL(String(value || ""), location.href);
       const hostname = url.hostname.toLowerCase();
-      return url.protocol === "https:" && PRIME_SERVICE_DOMAINS.some((domain) => (
-        hostname === domain || hostname.endsWith(`.${domain}`)
-      ));
+      return url.protocol === "https:" && globalThis.SubtleSupportedSites.isServiceHostname("prime", hostname);
     } catch (_error) {
       return false;
     }
@@ -229,7 +221,7 @@
     try {
       const url = new URL(String(value || ""), location.href);
       const hostname = url.hostname.toLowerCase();
-      const trustedAmazonHost = /^(?:www[.])?amazon[.](?:ae|ca|co[.]jp|co[.]uk|co[.]za|com|com[.]au|com[.]be|com[.]br|com[.]mx|com[.]tr|de|eg|es|fr|ie|in|it|nl|pl|sa|se|sg)$/.test(hostname);
+      const trustedAmazonHost = globalThis.SubtleSupportedSites.forId("prime").hostnames.includes(hostname);
       return url.protocol === "https:"
         && url.href.length <= 16_384
         && (trustedAmazonHost || MEDIA_DOMAINS.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`)))

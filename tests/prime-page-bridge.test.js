@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
+const sitesSource = fs.readFileSync(path.resolve(__dirname, "../lib/supported-sites.js"), "utf8");
 const bridgeSource = fs.readFileSync(path.resolve(__dirname, "../prime-page-bridge.js"), "utf8");
 
 test("Prime playback responses publish opaque tracks and load the selected timed-text file", async () => {
@@ -31,6 +32,7 @@ test("Prime playback responses publish opaque tracks and load the selected timed
     })],
     [subtitleUrl, '<tt><body><div><p begin="00:00:01.000" end="00:00:02.000">Prime line</p></div></body></tt>']
   ]));
+  vm.runInContext(sitesSource, harness.context);
   vm.runInContext(bridgeSource, harness.context);
 
   await vm.runInContext(`fetch(${JSON.stringify(playbackUrl)})`, harness.context);
@@ -78,6 +80,7 @@ test("Prime ignores playback-shaped responses from unrelated requests and reject
       timedTextUrls: { result: { subtitleUrls: [{ languageCode: "en", url: "https://cf-timedtext.aux.pv-cdn.net/en.xml" }] } }
     })]
   ]));
+  vm.runInContext(sitesSource, harness.context);
   vm.runInContext(bridgeSource, harness.context);
 
   await vm.runInContext(`fetch(${JSON.stringify(unrelatedUrl)})`, harness.context);
